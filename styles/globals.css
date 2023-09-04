@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root{
   --dark-blue:#081A51;
   --hover-blue:#1B2B65;
@@ -15,7 +18,7 @@
 }
 html{
   font-size: 62.60%;
-
+color: #1b2b658c;
 }
 *{
   padding: 0;
@@ -24,6 +27,20 @@ html{
 }
 body{
   overflow: hidden;
+}
+.ant-btn-primary{
+  background: var(--dark-blue) !important;
+  color: #fff !important;
+}
+.formClass .ant-form-item{
+  margin-bottom: 0px !important;
+}
+.formClass .ant-input{
+  background: transparent !important;
+  border: none !important;
+}
+.formClass .ant-input::placeholder{
+  color: #081A51 !important;
 }
 .container_main{
   display: grid;

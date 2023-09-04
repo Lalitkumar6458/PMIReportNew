@@ -38,6 +38,9 @@
     "path": false
   },
   "devDependencies": {
-    "html-loader": "^4.2.0"
+    "autoprefixer": "^10.4.15",
+    "html-loader": "^4.2.0",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3"
   }
 }

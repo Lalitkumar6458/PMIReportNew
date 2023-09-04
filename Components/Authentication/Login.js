@@ -45,6 +45,7 @@ const Login_com = () => {
       redirect: false,
       name:data.name,
       email:data.email,
+      id:data.id,
       password: data.password,
       callbackUrl: "/"
   })
@@ -77,33 +78,34 @@ const Login_com = () => {
         email: username,
         password: password,
       };
-      axios.post(`${ApiEndPoint}api/login/`, data)
+      axios.post(`${ApiEndPoint}login/`, data)
         .then(function (response) {
+          console.log("response login", response);
           setIsLoading(false);
-          if (response.data == "Invalid credentials") {
+          if (response.status==201) {
             openNotification(
               "bottomRight",
               "Invalid credentials !",
-              "Username or password not valid",
+              response.data.message,
               "error"
             );
             setUsernameCheck(false);
             setPasswordCheck(false);
-          } else if (response.status = 202) {
-const data={
-  name:response.data.username,
-  email:response.data.email,
-  password: password,
-}
-            loginStatus(
-data
-            )
-    
+          } else if ((response.status = 200)) {
+            const data = {
+              name: response.data.data.username,
+              email: response.data.data.email,
+              password: password,
+              id: response.data.data.id,
+            };
+            loginStatus(data);
+localStorage.setItem("UserId", response.data.data.id);
+localStorage.setItem("token", response.data.token);
+
             // info();
             // Router.push("/");
 
             // setLoginSignup(!loginSignup);
-    
 
             // navigate("/Search_fragrance");
             // window.location.reload(false);
@@ -133,11 +135,13 @@ setLoginSignup(!loginSignup);
   }
 
    // Google Handler function
-   async function handleGoogleSignin(){
-    
-    signIn('google', { callbackUrl : "http://localhost:3000"})
+const handleGoogleLogin = async () => {
 
-}
+     signIn("google", { callbackUrl: "/" });
+   
+
+};
+
   return (
     <>
       {loginSignup ? (
@@ -190,7 +194,7 @@ setLoginSignup(!loginSignup);
             <div className={css.LoginGoogle}>
               <button
                 type="button"
-                onClick={handleGoogleSignin}
+                onClick={handleGoogleLogin}
                 className={css.button_custom}
               >
                 <Image src={imgG} width="20" height={20} /> Sign In with Google
@@ -207,7 +211,7 @@ setLoginSignup(!loginSignup);
                     color: "blue",
                   }}
                 >
-                Signup Here
+                  Signup Here
                 </Link>
               </span>
             </div>

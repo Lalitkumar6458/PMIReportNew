@@ -48,17 +48,16 @@ const Signup = (props) => {
   const Loginhandler = () => {
     const options = {
       method: "POST",
-      url: `${ApiEndPoint}api/register/`,
+      url: `${ApiEndPoint}users`,
       headers: {
         "content-type": "application/json",
       },
-      data: [
-        {
-          username: username,
-          email: email,
-          password: password,
-        },
-      ],
+      data: {
+        username: username,
+        email: email,
+        password: password,
+        signupMethod: "manual",
+      },
     };
 
     if (username != "" && password != "" && confirmpassword != "" && email != "") {
@@ -70,22 +69,27 @@ const Signup = (props) => {
           .request(options)
           .then(function (response) {
             setIsLoading(false);
-            if (response.data == "Invalid credentials") {
-              openNotification(
-                "bottomRight",
-                "Invalid credentials !",
-                "Username or password not valid",
-                "error"
-              );
-              setUsernameCheck(false);
-              setPasswordCheck(false);
-            } else {
-              info();
-              localStorage.setItem("flag", true);
-
-
-              //   navigate("/");
-              Router.push("/login")
+            if (response.status == 200) {
+                info();
+                localStorage.setItem("flag", true);
+                Router.push("/login");
+            } else if(response.status == 201){
+    openNotification(
+      "bottomRight",
+      "User Registered",
+      response.data.message,
+      "error"
+    );
+            }
+            else {
+             openNotification(
+               "bottomRight",
+               "Invalid credentials !",
+               "Username or password not valid",
+               "error"
+             );
+             setUsernameCheck(false);
+             setPasswordCheck(false);
             }
           })
           .catch(function (error) {

@@ -1,6 +1,7 @@
 import Layout from "@/Components/Layout";
 import React, { useState,useEffect } from "react";
-import { Button, Modal, Input,message  } from "antd";
+import { Button, Modal, Input, message, Popconfirm } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import styles from "@/styles/Chemical.module.css";
 import Router from "next/router";
 import { ApiEndPoint } from "@/public/ApiEndPoint";
@@ -22,67 +23,97 @@ import axios from "axios";
 import BorderBox from "@/Components/SmallComponets/BorderBox";
 import { useSession,getSession} from "next-auth/react"
 import MessageAlert from "@/Components/SmallComponets/MessageAlert";
+import ChemicalAdd from "@/Components/FormCon/ChemicalAdd";
 var arrlist = {};
 var table_th = [];
 var table_td = [];
 // var modalData;
 
-const Chemical = () => {
-  const [messageApi, contextHolder] = message.useMessage()
-    const {session ,status,data} = useSession()
+const Chemical = ({ session }) => {
+  const [messageApi, contextHolder] = message.useMessage();
+  const {  status, data } = useSession();
   const [open, setOpen] = useState(false);
   const [modalData, setModalData] = useState({});
   const [chemicalInput, setChemicalInput] = useState({});
-  const[gradeName,setGradeName]=useState('')
-  const [searchKeyword, setSearchKeyword] = useState('')
-  function messageAlert(type,content){
-    const key = 'updatable';
-   
-    console.warn("session",userInfo)
- messageApi.open({
+  const [gradeName, setGradeName] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const[isEditGrade,setIsEditGrade]=useState(false)
+  const [EditGradeData, setEditGradeData] = useState(false);
+
+
+  function messageAlert(type, content) {
+    const key = "updatable";
+
+    console.warn("session", userInfo);
+    messageApi.open({
       key,
       type,
       content,
-    })
+    });
   }
-  const userInfo=data.user
+     let UserId = "";
+     let token;
+      if (typeof localStorage != undefined) {
+        UserId = localStorage.getItem("UserId");
+        token = localStorage.getItem("token");
+      }
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showAddModal = () => {
+    setIsModalOpen(true);
+    setIsEditGrade(false)
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const userInfo = data.user;
   const showModal = (data) => {
-    setModalData({ ...data });
-    setChemicalInput({ ...data.chemical_name });
-    setGradeName(data.Grade)
-    setOpen(true);
+    setIsEditGrade(true)
+    setEditGradeData(data)
+    setIsModalOpen(true);
+    // setModalData({ ...data });
+    // setChemicalInput({ ...data.chemical_name });
+    // setGradeName(data.Grade);
+    // setOpen(true);
   };
   const hideModal = () => {
     setOpen(false);
   };
-  const Deletegrade = async(item) => {
-    messageAlert('loading','Deleting Grade...')
-    const data = {
-      gradeId: item.id,
-      user_info: item.user_info,
-      chemical_grade_id: item.chemical_grade_id,
-      username: userInfo.name,
-      email: userInfo.email,
-    };
-    await axios
-      .post(`${ApiEndPoint}delete_chemical/`, data, {
-        "Content-Type": "application/json",
-        Connection: "Keep-Alive",
-        Authorization: `Bearer test`,
-      })
-      .then((response) => {
-        messageAlert('success','Succesfully Deleted Grade')
-        getAllChemicalData()
-        setOpen(false);
-      })
-      .catch((error) => {
+  const Deletegrade = async (item) => {
+    messageAlert("loading", "Deleting Grade...");
+ 
 
-        messageAlert('error',error.message)
+       const response = await fetch(`${ApiEndPoint}chemical/`, {
+         method: "DELETE",
+         headers: {
+           "Content-Type": "application/json",
+           Connection: "Keep-Alive",
+           Authorization: `Bearer ${token}`,
+         },
+         body: JSON.stringify({
+           id: item._id,
+           userId: item.userId,
+         }),
+       });
+       const data = await response.json();
+       console.log("data", data);
+       if (response.ok) {
+         console.log("Data saved to database");
+          getAllChemicalData();
+        messageAlert("success", "Succesfully Deleted Grade");
 
-        console.log(error, "error");
-      });
+
+       } else {
+        messageAlert("error", "Error deleting...");
+
+         console.error("Error saving data to database");
+       }
+
   };
-  
+
   const initialValues = {
     el_name: "",
     percent: "",
@@ -92,7 +123,7 @@ const Chemical = () => {
   const [checkempty, setCheckempty] = useState(true);
 
   const [gradedata, setGradedata] = useState({});
-  const [allGradeData, setAllGradeData]=useState([])
+  const [allGradeData, setAllGradeData] = useState([]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({
@@ -132,14 +163,14 @@ const Chemical = () => {
   };
 
   const saveGrade = () => {
-    const key = 'updatable';
-    messageAlert('loading','Loading...')
-  
+    const key = "updatable";
+    messageAlert("loading", "Loading...");
+
     const data_obj = JSON.stringify({
       grade_name: grade,
       chemical_name: arrlist,
-      username:userInfo.name,
-      email: userInfo.email
+      username: userInfo.name,
+      email: userInfo.email,
     });
 
     axios
@@ -149,13 +180,12 @@ const Chemical = () => {
         Authorization: `Bearer test`,
       })
       .then((response) => {
-    messageAlert('success','Succesfully Saved Grade Chemical')
-        getAllChemicalData()
+        messageAlert("success", "Succesfully Saved Grade Chemical");
+        getAllChemicalData();
       })
       .catch((error) => {
-      
         console.log(error, "error");
-        messageAlert('error',error.message)
+        messageAlert("error", error.message);
         // messageApi.open({
         //   key,
         //   type: 'error',
@@ -164,16 +194,15 @@ const Chemical = () => {
         // });
       });
   };
-  const updateChemical = async (e) => {  
+  const updateChemical = async (e) => {
     const { name, value } = e.target;
     setChemicalInput({
       ...chemicalInput,
       [name]: value,
     });
-  
   };
-  const UpdateChemical =async()=>{
-    messageAlert('loading','Loading...')
+  const UpdateChemical = async () => {
+    messageAlert("loading", "Loading...");
     const data = {
       grade: gradeName,
       chemical_grade_id: modalData.chemical_grade_id,
@@ -189,57 +218,50 @@ const Chemical = () => {
         Authorization: `Bearer test`,
       })
       .then((response) => {
-    messageAlert('success','Succesfully Update Grade Chemical')
-        
-        getAllChemicalData()
+        messageAlert("success", "Succesfully Update Grade Chemical");
+
+        getAllChemicalData();
         setOpen(false);
       })
       .catch((error) => {
-      
         console.log(error, "error");
-        messageAlert('error',error.message)
-
+        messageAlert("error", error.message);
       });
-  }
-  const getAllChemicalData=async()=>{
-    messageAlert('loading','Geting grade chemical Data...')
-
+  };
+  const getAllChemicalData = async () => {
+    messageAlert("loading", "Geting grade chemical Data...");
+   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     const data_obj = {
-      getdata: "allData",
-      username: userInfo.name,
-      email:  userInfo.email
+userId:UserId
     };
-   await axios.get(`${ApiEndPoint}get_grade_chemical_data/`,{params:data_obj}, {
-        "Content-Type": "application/json",
-        Connection: "Keep-Alive",
-        Authorization: `Bearer test`,
-
-      })
+    await axios
+      .get(
+        `${ApiEndPoint}Chemical/`,
+        { params: data_obj },
+      )
       .then((response) => {
-        setAllGradeData(response.data.data)
-        messageAlert('success','Succesfully Get all Grade Chemical data')
+        console.log("response 7h", response);
+        if (response.status==200){
+          setAllGradeData(response.data.data);
+          messageAlert("success", "Succesfully Get all Grade Chemical data");
+        }
       })
       .catch((error) => {
         // dispatch({
         //   type: ERROR_FINDING_USER
         // })
         console.log(error, "error");
-    messageAlert('error',error.message)
-
+        messageAlert("error", error.message);
       });
-  }
+  };
   useEffect(() => {
-    getAllChemicalData()
-  }, [])
-  const SearchGradeHandler =async(e)=>{
-    messageAlert('loading','Searching grade...')
+    getAllChemicalData();
+  }, []);
+  const SearchGradeHandler = async (e) => {
+    messageAlert("loading", "Searching grade...");
 
-    setSearchKeyword(e.target.value)
-        
-    
-   
-   
-    
+    setSearchKeyword(e.target.value);
+
     await axios
       .get(
         `${ApiEndPoint}search_grade/`,
@@ -247,7 +269,7 @@ const Chemical = () => {
           params: {
             word: e.target.value,
             username: userInfo.name,
-            email:  userInfo.email
+            email: userInfo.email,
           },
         },
         {
@@ -257,233 +279,181 @@ const Chemical = () => {
         }
       )
       .then((response) => {
-        messageAlert('success','Succesfully Get Search result')
+        messageAlert("success", "Succesfully Get Search result");
 
         setAllGradeData(response.data.data);
-   
       })
       .catch((error) => {
-        
         console.log(error, "error");
-    messageAlert('error',error.message)
-
+        messageAlert("error", error.message);
       });
-  }
+  };
   // if(status !== "authenticated" ){
   //   Router.replace('/login')
   //   }
   return (
     <Layout title="Chemical">
- {contextHolder}
+      {contextHolder}
       <div className={styles.Chemical_container}>
+        <div className="flex items-center justify-end">
+
+        <button
+          className="bg-mainDark text-white font-inter text-[2rem] rounded-md py-3 px-3"
+          onClick={showAddModal}
+        >
+          Add Grade
+        </button>
+        </div>
         <div className={styles.alloys_content}>
-          <BorderBox title={"Add Chemical"}>
-          <div
-            className={
-             `${styles.grade_chemical} row`
-            }
-          >
-            <div className={`${styles.input_field} col-12 col-md-6 drop_box`}>
-              <div className={`${styles.input_div} ${styles.grade_input} `}>
-                <label>Grade Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter Grade name..."
-                  value={grade}
-                  name="grade_name"
-                  onChange={Gradehandler}
-                />
-              </div>
-              <div className={styles.group_input}>
-                <div className={styles.input_div}>
-                  <label>Element Name</label>
-                  <input
-                    type="text"
-                    value={values.el_name}
-                    name="el_name"
-                    onChange={handleInputChange}
-                    placeholder="Enter Element name..."
-                  />
-                </div>
-                <div className={styles.input_div}>
-                  <label>Percent(%)</label>
-                  <input
-                    type="text"
-                    placeholder="Enter percnetage name..."
-                    value={values.percent}
-                    name="percent"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <button
-                  className={styles.add_btn}
-                  onClick={() => sumbit_input()}
-                >
-                  Add <FaPlusCircle />
-                </button>
-              </div>
-            </div>
-            <div
-              className={`${styles.table_fields} col-12 col-md-6 drop_box`}
-              id="table_fields"
-            >
-              {checkempty ? (
-                <div className={styles.empty_table}>
-                  <Image src={add_gif} alt="" />
-                  <h4>Add Grade Name And it's Chemical</h4>
-                </div>
-              ) : (
-                <div>
-                  <h5>Grade:{grade}</h5>
-                  <table>
-                    <thead>
-                      <tr id="chemical_row">
-                        {table_th.map((item) => {
-                          return <th>{item}</th>;
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr id="chemical_data">
-                        {table_td.map((item) => {
-                          return <td>{item}</td>;
-                        })}
-                      </tr>
-                    </tbody>
-                  </table>
-                  <button
-                    className={styles.add_btn}
-                    onClick={() => saveGrade()}
-                  >
-                    Save <HiOutlineSaveAs />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          </BorderBox>
           <BorderBox title={"Chemical Compositions"}>
-          <div className={styles.table_grades}>
-            <div className={styles.chemical_comp}>
-              <div className={styles.wrraper_box}>
-                <div className={styles.search_box}>
-                  <HiOutlineSearch className={styles.searchicon} />
-                  <input type="text" placeholder="Search Grades chemical..." value={searchKeyword} onChange={SearchGradeHandler} />
+            <div className={styles.table_grades}>
+              <div className={styles.chemical_comp}>
+                <div className={styles.wrraper_box}>
+                  <div className={styles.search_box}>
+                    <HiOutlineSearch className={styles.searchicon} />
+                    <input
+                      type="text"
+                      placeholder="Search Grades chemical..."
+                      value={searchKeyword}
+                      onChange={SearchGradeHandler}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <table className={styles.main_grade}>
-                <thead>
-                  <tr>
-                    <th>Grade</th>
-                    <th>Chemical</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {allGradeData.map((item) => {
-                    return (
-                      <tr key={item.id}>
-                        <td className={styles.grade_td}>Grade:{item.Grade}</td>
-                        <td>
-                          <div className={styles.divChemical}>
-                            <table>
-                              <thead>
-                                <tr>
-                                  {Object.keys(item.chemical_name).map(
-                                    (each, index) => {
-                                      return <th key={index}>{each}</th>;
-                                    }
-                                  )}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  {Object.keys(item.chemical_name).map(
-                                    (each, index) => {
+                <table className={styles.main_grade}>
+                  <thead>
+                    <tr>
+                      <th>Grade</th>
+                      <th>Chemical</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allGradeData.map((item) => {
+                      return (
+                        <tr key={item._id}>
+                          <td className={styles.grade_td}>
+                            Grade:{item.grade}
+                          </td>
+                          <td>
+                            <div className={styles.divChemical}>
+                              <table>
+                                <thead>
+                                  <tr>
+                                    {item.chemical.map((each, index) => {
                                       return (
-                                        <td key={index}>
-                                          {item.chemical_name[each]}
-                                        </td>
+                                        <th key={index}>{each.Element}</th>
                                       );
-                                    }
-                                  )}
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </td>
-                        <td className={styles.button_actions}>
-                          <button onClick={() => showModal(item)}>
-                            Edit <FaEdit className={styles.icon_t} />
-                          </button>
-                          <button onClick={() => Deletegrade(item)}>
-                            Delete <MdDelete className={styles.icon_t} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-
-              <table className={styles.mobile_table_c}>
-                <tbody>
-                  {allGradeData.map((item) => {
-                    return (
-                      <tr>
-                        <td className={styles.td_mobile}>
-                          <div className={styles.divChemical}>
-                            <h3>Grade:{item.Grade}</h3>
-                            <table>
-                              <thead>
-                                <tr>
-                                  {Object.keys(item.chemical_name).map(
-                                    (each, index) => {
-                                      return <th key={index}>{each}</th>;
-                                    }
-                                  )}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  {Object.keys(item.chemical_name).map(
-                                    (each, index) => {
+                                    })}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    {item.chemical.map((each, index) => {
                                       return (
-                                        <td key={index}>
-                                          {item.chemical_name[each]}
-                                        </td>
+                                        <td key={index}>{each.percent}</td>
                                       );
-                                    }
-                                  )}
-                                </tr>
-                              </tbody>
-                            </table>
-                            <div className={styles.buttons_eddit}>
-                              <span>
-                                <FaEdit
-                                  className={styles.icon_edit}
-                                  onClick={() => showModal(item)}
-                                />
-                              </span>
-                              <span>
-                                <MdDelete
-                                  className={styles.icon_delete}
-                                  onClick={() => Deletegrade(item)}
-                                />
-                              </span>
+                                    })}
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td className={styles.button_actions}>
+                            <button onClick={() => showModal(item)}>
+                              Edit <FaEdit className={styles.icon_t} />
+                            </button>
+
+                            <Popconfirm
+                              title={"Delete the Grade: " + item.grade}
+                              description="Are you sure to delete this Grade?"
+                              onConfirm={() => Deletegrade(item)}
+                              icon={
+                                <QuestionCircleOutlined
+                                  style={{
+                                    color: "red",
+                                  }}
+                                />
+                              }
+                            >
+                              <button>
+                                Delete <MdDelete className={styles.icon_t} />
+                              </button>
+                            </Popconfirm>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+                <table className={`${styles.mobile_table_c} w-full`}>
+                  <tbody>
+                    {allGradeData.map((item) => {
+                      return (
+                        <tr>
+                          <td className={styles.td_mobile}>
+                            <div className={styles.divChemical}>
+                              <h3>Grade:{item.Grade}</h3>
+                              <table>
+                                <thead>
+                                  <tr>
+                                    {item.chemical.map((each, index) => {
+                                      return (
+                                        <th key={index}>{each.Element}</th>
+                                      );
+                                    })}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    {item.chemical.map((each, index) => {
+                                      return (
+                                        <td key={index}>{each.percent}</td>
+                                      );
+                                    })}
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <div className={styles.buttons_eddit}>
+                                <span>
+                                  <FaEdit
+                                    className={styles.icon_edit}
+                                    onClick={() => showModal(item)}
+                                  />
+                                </span>
+
+                                <span>
+                                   <Popconfirm
+                              title={"Delete the Grade: " + item.grade}
+                              description="Are you sure to delete this Grade?"
+                              onConfirm={() => Deletegrade(item)}
+                              icon={
+                                <QuestionCircleOutlined
+                                  style={{
+                                    color: "red",
+                                  }}
+                                />
+                              }
+                            >
+
+
+                                  <MdDelete
+                                    className={styles.icon_delete}
+                                  />
+                            </Popconfirm>
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-            </BorderBox>
-          
+          </BorderBox>
         </div>
       </div>
       <Modal
@@ -510,7 +480,7 @@ const Chemical = () => {
               <Input
                 placeholder="grade name"
                 value={gradeName}
-                onChange={(e)=>setGradeName(e.target.value)}
+                onChange={(e) => setGradeName(e.target.value)}
               />
             </div>
 
@@ -539,6 +509,17 @@ const Chemical = () => {
               Update
             </Button>
           </div>
+        </div>
+      </Modal>
+      <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        <div className="py-3 px-3">
+          <ChemicalAdd
+            session={session}
+            isEditGrade={isEditGrade}
+            setIsModalOpen={setIsModalOpen}
+            EditGradeData={EditGradeData}
+            getAllChemicalData={getAllChemicalData}
+          />
         </div>
       </Modal>
     </Layout>
