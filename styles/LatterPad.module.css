@@ -175,6 +175,114 @@ color: #000000;
     justify-content: center;
     background-color: rgb(168, 16, 16);
 }
+
+
+.nameBox3{
+    width: 100%;
+   display: flex;
+   align-items: center;
+}
+.LineBox1{
+   flex: 1;
+  
+}
+.nameBox3 h2{
+    width:fit-content;
+    text-align: center;
+    color: #D7564A;
+text-align: center;
+font-family: var(--inter);
+font-size: 37px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+padding: 0 15px;
+}
+.LineBox2{
+    width: 10%;
+}
+.LineBox1,.LineBox2{
+display: flex;
+flex-direction: column;
+gap: 7px;
+}
+
+.Line1{
+    width: 100%;
+    height: 15px;
+    background-color: #D04F3C;
+}
+.Line2{
+    width: 100%;
+    height: 15px;
+    background-color: #49476C;
+}
+.bottomtextBox{
+    display: flex;
+}
+.alloytext{
+width: 60%;
+}
+.alloytext h3{
+    color: #444368;
+text-align: center;
+font-family: Roboto;
+font-size: 19px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+}
+.PmiText{
+width: 40%;
+background-color: #49476C;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.PmiText h1{
+    color: #FFF;
+text-align: center;
+font-family: Roboto;
+font-size: 30.757px;
+font-style: normal;
+font-weight: 600;
+line-height: normal;
+margin: 0px;
+}
+.changeClass{
+    cursor: pointer;
+}
+.changeClass:hover{
+    background-color: #ced1e9;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 5px;
+}
+.endbox{
+    display: flex;
+    align-items: center;
+}
+.endLine{
+    width: 67%;
+    height: 2px;
+    background: #D04F3C;
+}
+.infoBoxCont{
+    /* width: 30%;  */
+    margin-left: 5px;
+}
+.infoBoxCont h2{
+    color: #D04F3C;
+    text-align: left;
+    font-family: Roboto;
+    font-size: 17.17px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+.newtext p{
+    color: #D04F3C !important;
+}
 @media  (max-width: 1070px) {
 
     .textname h4{

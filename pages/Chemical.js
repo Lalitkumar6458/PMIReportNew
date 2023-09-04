@@ -291,6 +291,27 @@ userId:UserId
   // if(status !== "authenticated" ){
   //   Router.replace('/login')
   //   }
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemperpage,setItemPerPage]=useState(3)
+let itemsPerPage=3
+    // Calculate total pages based on data length and items per page
+    const totalPages = allGradeData.length; 
+
+    // Calculate the data to be displayed on the current page
+    const startIndex = (currentPage - 1) * itemperpage;
+    const endIndex = startIndex + itemperpage;
+    const pageData = allGradeData.slice(startIndex, endIndex);
+
+    // Function to handle page changes
+    const handlePageChange = (pageNumber) => {
+      console.log(pageNumber, "pageNumber");
+      setCurrentPage(pageNumber);
+    };
+const onShowSizeChange = (current, pageSize) => {
+  console.log(current, pageSize);
+setItemPerPage(pageSize);
+};
   return (
     <Layout title="Chemical">
       {contextHolder}

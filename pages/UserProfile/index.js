@@ -86,7 +86,6 @@ const index = () => {
           params: {
             username: data.user.name,
             email: data.user.email,
-            origin: getUserDataUrl.split("/")[2],
           },
         },
         {

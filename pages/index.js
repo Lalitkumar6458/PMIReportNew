@@ -4,16 +4,18 @@ import { FileAddOutlined } from "@ant-design/icons";
 import Router from "next/router";
 import Link from "next/link";
 import { getSession, useSession, signOut } from "next-auth/react";
-
-
-export default function Home() {
+import {WhatsappShareButton,WhatsappIcon} from 'next-share'
+import axios from "axios";
+import { ApiEndPoint } from "@/public/ApiEndPoint";
+export default function Home({ dashBoardData }) {
   const { data: session, status } = useSession();
   function handleSignOut() {
     signOut();
   }
-  
 
-  return <>{session ? User({ session, handleSignOut }) : Guest()}</>;
+  return (
+    <>{session ? User({ session, handleSignOut, dashBoardData }) : Guest()}</>
+  );
 }
 // Guest
 function Guest() {
@@ -32,69 +34,23 @@ function Guest() {
   );
 }
 
-function User({ session, handleSignOut }) {
-//   let PizZipUtils = null;
-// if (typeof window !== "undefined") {
-//     import("pizzip/utils/index.js").then(function (r) {
-//         PizZipUtils = r;
-//     });
-// }
-
-// function loadFile(url, callback) {
-//     PizZipUtils.getBinaryContent(url, callback);
-// }
-
-// const generateDocument = () => {
-   
-//       axios
-//     .get(template, {
-//       responseType: "arraybuffer",
-//     })
-//     .then((response) => {
-//       const content = response.data;
-//       const zip = new PizZip(content);
-//       const doc = new Docxtemplater().loadZip(zip);
-//       // render the document (replace all occurrences of {first_name} by John, {last_name} by Doe, ...)
-      
-//       const data = {
-//         items: [
-//           { name1: 'Item 1',price:123 },
-//           { name1: 'Item 2',price:145 },
-//           { name1: 'Item 3',price:125 },
-//         ],
-//         name:"lalit kumar",
-    
-//       };
-  
-//       // Set the data for the template
-//       doc.setData(data);
-  
-//       // Perform the rendering
-//       doc.render();
-//       const blob = doc.getZip().generate({
-//         type: "blob",
-//         mimeType:
-//           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-//       });
-//       // Output the document using Data-URI
-//       saveAs(blob, "output.docx");
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//     });
-// };
-
-
+function User({ session, handleSignOut,dashBoardData }) {
+const redirectOnPage=(pagename)=>{
+Router.push(pagename);
+}
   return (
     <>
-      <Layout title="Dashboard" paddingTop='60px'>
+      <Layout title="Dashboard" paddingTop="60px">
         <div className={styles.dashboard_con}>
           <div className={styles.DashBoxs}>
             <div className="row">
-              <div className="col-lg-3 col-sm-6 col-6 d-flex">
+              <div
+                className="col-lg-3 col-sm-6 col-6 d-flex cursor_poniter"
+                onClick={() => redirectOnPage("/Category")}
+              >
                 <div className={`${styles.dash_count} ${styles.dash_count}`}>
                   <div className={styles.dash_counts}>
-                    <h4>10</h4>
+                    <h4>{dashBoardData.client_count}</h4>
                     <h5>Client</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -116,10 +72,13 @@ function User({ session, handleSignOut }) {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-3 col-sm-6 col-6 d-flex">
+              <div
+                className="col-lg-3 col-sm-6 col-6 d-flex cursor_poniter"
+                onClick={() => redirectOnPage("/Chemical")}
+              >
                 <div className={`${styles.dash_count} ${styles.das1}`}>
                   <div className={styles.dash_counts}>
-                    <h4>134</h4>
+                    <h4>{dashBoardData.grade_count}</h4>
                     <h5>Grades</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -145,7 +104,7 @@ function User({ session, handleSignOut }) {
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das2}`}>
                   <div className={styles.dash_counts}>
-                    <h4>145</h4>
+                    <h4>{dashBoardData.monthly_count}</h4>
                     <h5>Month Report </h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -173,7 +132,8 @@ function User({ session, handleSignOut }) {
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das3}`}>
                   <div className={styles.dash_counts}>
-                    <h4>5</h4>
+                    <h4>{dashBoardData.today_report_count}</h4>
+
                     <h5>Today Report</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -197,17 +157,15 @@ function User({ session, handleSignOut }) {
               </div>
             </div>
           </div>
-{/* <div className="">
-<button onClick={generateDocument}>Generate Document</button>
-</div> */}
+
           <div className={styles.reportButon}>
             <button
-            
               className={styles.reportBtn}
               shape="round"
               onClick={() => Router.push("/Report")}
             >
-              <FileAddOutlined /> <span className={styles.reportText}>Report</span>
+              <FileAddOutlined />{" "}
+              <span className={styles.reportText}>Report</span>
             </button>
           </div>
         </div>
@@ -219,16 +177,35 @@ function User({ session, handleSignOut }) {
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
 
-  if (!session) {
+  try{
+   const  resData = await axios.get(`${ApiEndPoint}dashboard_info/`, {
+      params: { userEmail: session?.user?.email },
+    });
+    if (!session) {
+      return {
+        redirect: {
+          destination: "/login",
+          permanent: false,
+        },
+      };
+    }
+  
     return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
+      props: {
+        session,
+        dashBoardData: resData.data,
+      },
+    };
+
+  }catch(e){
+    console.log("Error"+e)
+    return {
+      props: {
+        session,
+        dashBoardData: {},
       },
     };
   }
 
-  return {
-    props: { session },
-  };
+
 }

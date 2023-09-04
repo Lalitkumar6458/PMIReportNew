@@ -3,6 +3,8 @@ import css from '../../../styles/LatterPad.module.css'
 import Image from 'next/image'
 import img1 from "../../../public/Images/latterpad/form1.png"
 import img2 from "../../../public/Images/latterpad/form2.png"
+import img3 from "../../../public/Images/latterpad/form3.png"
+
 import { PlusOutlined } from '@ant-design/icons';
 import Link from 'next/link'
 const LatterPad = () => {
@@ -21,7 +23,7 @@ const LatterPad = () => {
   {
     id:3,
     name:'Formate 3',
-    img:img1
+    img:img3
 
   }
 

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Document, Page, Text, View, StyleSheet,Table, TableCell, TableHeader, TableBody } from '@react-pdf/renderer';
 import TopLatterPad from './TopLatterPad';
+import LatterPadForm3 from './LatterPadForm3';
+import Html from 'react-pdf-html';
 const styles = StyleSheet.create({
     page: {
       flexDirection: 'row',
@@ -79,7 +81,10 @@ const ReportlatterPad = () => {
     <Page size="A4" style={styles.page}>
       <View style={styles.section_main}>
 <View style={styles.blank_space}>
-<TopLatterPad latterPadFormNo={2}/>
+
+<Html>
+{LatterPadForm3()}
+</Html>
 </View>
 <View style={styles.testHeading}><Text>TEST REPORT</Text></View>
 

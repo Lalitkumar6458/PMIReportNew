@@ -167,9 +167,15 @@ const obj = {
 <span>
 {
             data.length >= 1 ? (
-              <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-                <a><DeleteOutlined className={styles.icon_del} /></a>
-              </Popconfirm>
+                <Popconfirm
+                              title="Delete the Item"
+                              description="Are you sure to delete this item?"
+                              onConfirm={() => handleDelete(record.key)}
+                            >
+
+                              <a><DeleteOutlined className={styles.icon_del} /></a>
+                            </Popconfirm>
+             
             ) : null
           }
 </span>

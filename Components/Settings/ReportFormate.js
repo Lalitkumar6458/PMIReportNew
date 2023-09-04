@@ -1,6 +1,6 @@
 import React,{useState} from 'react'
 import css  from "../../styles/ReportPage.module.css"
-import formate1 from "../../public/Images/ReportFormate/formate1.jpg"
+import formate1 from "../../public/Images/ReportFormate/formate1.png"
 import { Button, Modal } from "antd";
 import Image from 'next/image';
 import {CheckOutlined} from '@ant-design/icons';
@@ -11,17 +11,17 @@ const ReportFormate = () => {
 const[reportFormateData,setReportFormateData]=useState([
     {
         id:1,
-        image:require("../../public/Images/ReportFormate/formate1.jpg"),
+        image:require("../../public/Images/ReportFormate/formate1.png"),
         active:true,
     },
     {
         id:2,
-        image:require("../../public/Images/ReportFormate/formate2.jpg"),
+        image:require("../../public/Images/ReportFormate/formate2.png"),
         active:false
     },
     {
         id:3,
-        image:require("../../public/Images/ReportFormate/formate3.jpg"),
+        image:require("../../public/Images/ReportFormate/formate3.png"),
         active:false
     }
 ])

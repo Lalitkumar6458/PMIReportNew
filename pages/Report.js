@@ -39,27 +39,28 @@ import axios from "axios";
 let allData=[]
 var count=1
 const Report = ({ reportData,session }) => {
+  console.log(reportData, "reportData")
   const selectRef = useRef(null);
   const [allReportdata, setAllReportData] = useState({});
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [tableview, setTableview] = useState(false);
   
-  const [items2, setItems2] = useState(reportData?.instrument_id?.map((item,index)=>{
+  const [items2, setItems2] = useState(reportData?.instrument_id?reportData?.instrument_id?.map((item,index)=>{
     return{
       value:item,
       label:item,
       key:index
     }
-  }));
-  const [modalNo, setModalNo] = useState(
+  }):[]);
+  const [modalNo, setModalNo] = useState(reportData?.model_info?
     reportData?.model_info?.map((item,index)=>{
       return{
         value:item,
         label:item,
         key:index
       }
-    }))
+    }):[])
   
   const [name, setName] = useState("");
   const [modalname, setModalName] = useState("");
@@ -125,6 +126,7 @@ const DataReport={
   };
   let index = 0;
   const addItem = async(e) => {
+    console.log(items2,"items2")
     e.preventDefault();
     setItems2([
       ...items2,
@@ -243,11 +245,11 @@ const [partyname, setPartyName] = useState(getDataLocal?getDataLocal.partyname:"
 
   const [instrumentValue, setInstrumentValue] = useState(getDataLocal?getDataLocal.instrumentValue:"");
 
-  const partName = reportData?.user_based_client?.map((item)=>{
+  const partName = reportData?.user_based_client?.map((item,index)=>{
     return {
-value:item,
-label:item,
-key:item,
+value:item.client_name,
+label:item.client_name,
+key:index,
     }
   })||[]
   
@@ -268,6 +270,7 @@ key:item,
     }chemical_based_on_grade/`,{params:objData})
 
     if(resData.status === 200){
+      console.log("resData.data[0].chemical_name",typeof resData.data[0].chemical_name)
     setGradeDataC(resData.data[0].chemical_name)
   }else{
     console.log(resData,"data not get from backemd")
@@ -302,6 +305,12 @@ key:item,
   const commonOnChangeFun=(value,setvalue,name)=>{
 
 setvalue(value)
+
+    if (name === "partyname"){
+      const userSelected = reportData?.user_based_client?.filter((item) => item.client_name === value)
+      console.log("userSelected", userSelected)
+      localStorage.setItem('ClientSelected',JSON.stringify(userSelected[0]))
+}
 
   let getDataLocal=localStorage.getItem('CreatedData')
   if(

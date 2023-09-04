@@ -17,57 +17,45 @@ import Image from 'next/image';
 import logo from "../public/Images/pmilogo.png"
 import Link from 'next/link';
 import { useRouter } from "next/router";
-
-
+import { HiUserGroup } from 'react-icons/hi2';
 const SideBar = () => {
     const router = useRouter()
   
     const[sidebar,setSidebar]=useState(false)
 
     const menu = [
-        {
-          id: 1,
-          name: "Dashboard",
-          link: "/",
-          icon: (
-            <MdOutlineSpaceDashboard className={styles.icon} />
-          ),
-        },
-        {
-          id: 2,
-          name: "Chemical",
-          link: "/Chemical",
-          icon: (
-            <CgProfile className={styles.icon} />
-          ),
-        },
-        {
-          id: 3,
-          name: "Category",
-          link: "/Category",
-          icon: (
-            <MdOutlineCategory className={styles.icon} />
-          ),
-        },
-        {
-          id: 4,
-          name: "History",
-          link: "/History",
-          icon: (
-            <MdOutlineAnalytics className={styles.icon} />
-          ),
-        },
-  
-        {
-          id: 5,
-          name: "About",
-          link: "/About",
-          icon: (
-            <BiMessageSquareDots className={styles.icon} />
-          ),
-        },
-       
-      ];
+      {
+        id: 1,
+        name: "Dashboard",
+        link: "/",
+        icon: <MdOutlineSpaceDashboard className={styles.icon} />,
+      },
+      {
+        id: 2,
+        name: "Chemical",
+        link: "/Chemical",
+        icon: <CgProfile className={styles.icon} />,
+      },
+      {
+        id: 3,
+        name: "Client",
+        link: "/Category",
+        icon: <HiUserGroup className={styles.icon} />,
+      },
+      {
+        id: 4,
+        name: "History",
+        link: "/History",
+        icon: <MdOutlineAnalytics className={styles.icon} />,
+      },
+
+      {
+        id: 5,
+        name: "About",
+        link: "/About",
+        icon: <BiMessageSquareDots className={styles.icon} />,
+      },
+    ];
 
     function handler_side_bar(){
         if(sidebar==false){
