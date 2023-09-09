@@ -503,20 +503,26 @@ return  <Page size="A4">
 }
 
   return (
-    <div>MsWord
-       
     <div>
-    <BlobProvider document={<MyDoc pageData={Data} />} fileName="somename.pdf">
-      {({ blob, url, loading, error }) => (loading ? 'Loading document...' :
-      
-      <a href={url}   target="_blank">
-      View PDF
-    </a>)}
-    </BlobProvider>
- 
-  </div>
+      MsWord
+      <div>
+        <BlobProvider
+          document={<MyDoc pageData={Data} />}
+          fileName="somename.pdf"
+        >
+          {({ blob, url, loading, error }) =>
+            loading ? (
+              "Loading document..."
+            ) : (
+              <Link href={url != undefined ? url : ""} target="_blank">
+                View PDF
+              </Link>
+            )
+          }
+        </BlobProvider>
+      </div>
     </div>
-  )
+  );
 }
 
 export default MsWord

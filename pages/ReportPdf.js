@@ -161,19 +161,27 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
           <div className="DownloadButton">
             <div className={css.format_row}>
               <div className={`${css.pdfInfo} row`}>
-                <div className='col-12 col-md-7'>
-                <div className={css.FileName}>
-                <label>File Name</label>
-                <input type='text' className='w-100' value={filename} onChange={(e)=>setFileName(e.target.value)} placeholder='Enter File Name...'/>
-              </div>
-                </div>
-             
-                <div className='col-12 col-md-5 d-flex align-items-center justify-content-center mb-3'>
-                <Checkbox checked={withLatter} onChange={onChangeHandler}>With LatterPad</Checkbox>;
+                <div className="col-12 col-md-7">
+                  <div className={css.FileName}>
+                    <label>File Name</label>
+                    <input
+                      type="text"
+                      className="w-100"
+                      value={filename}
+                      onChange={(e) => setFileName(e.target.value)}
+                      placeholder="Enter File Name..."
+                    />
+                  </div>
                 </div>
 
+                <div className="col-12 col-md-5 d-flex align-items-center justify-content-center mb-3">
+                  <Checkbox checked={withLatter} onChange={onChangeHandler}>
+                    With LatterPad
+                  </Checkbox>
+                  ;
+                </div>
               </div>
-              
+
               <div className="row">
                 <div className="col-6 col-md-4">
                   <div
@@ -229,7 +237,9 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
 
             <div className="mt-4 d-flex align-items-center g-5">
               <BlobProvider
-                document={<MyDocument formateNo={formateNo} latterPad={withLatter}  />}
+                document={
+                  <MyDocument formateNo={formateNo} latterPad={withLatter} />
+                }
                 style={styles.viewer}
                 filename="example.pdf"
               >
@@ -239,27 +249,41 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
                   ) : error ? (
                     "Error loading document :("
                   ) : (
-                     
                     <>
-
-                 
-
-                    <a href={url}  className="btnBox mx-3" target="_blank">
-                      View PDF<EyeOutlined />{" "}
-                    </a>
-                   <input type='hidden' value={url} id='pdfUrl'/>
+                      <Link
+                        href={url != undefined ? url : ""}
+                        className="btnBox mx-3"
+                        target="_blank"
+                      >
+                        View PDF
+                        <EyeOutlined />{" "}
+                      </Link>
+                      <input type="hidden" value={url} id="pdfUrl" />
                     </>
                   )
                 }
               </BlobProvider>
 
-              <PDFDownloadLink  className="btnBox" document={<MyDocument formateNo={formateNo} />} fileName={filename}>
-        {({ blob, url, loading, error }) => 
-                  (loading ? 'Loading document...' : <><span onClick={() => SaveReportData()} >Download PDF <DownloadOutlined /></span></>)}
-      </PDFDownloadLink>
+              <PDFDownloadLink
+                className="btnBox"
+                document={<MyDocument formateNo={formateNo} />}
+                fileName={filename}
+              >
+                {({ blob, url, loading, error }) =>
+                  loading ? (
+                    "Loading document..."
+                  ) : (
+                    <>
+                      <span onClick={() => SaveReportData()}>
+                        Download PDF <DownloadOutlined />
+                      </span>
+                    </>
+                  )
+                }
+              </PDFDownloadLink>
             </div>
           </div>
-          <button onClick={() => SaveReportData()} >Save Data</button>
+          <button onClick={() => SaveReportData()}>Save Data</button>
         </div>
         <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
           <Image src={imagename} alt="formate" className={css.imageFormate} />

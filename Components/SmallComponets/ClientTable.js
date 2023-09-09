@@ -42,147 +42,176 @@ const EditableCell = ({
     </td>
   );
 };
-const ClientTable = (props) => {
-  var messageAlert=props.messageAlert
- const{session,status}=useSession()
-
+const ClientTable = ({ dataObj, messageAlert, GetclientData }) => {
+  // var messageAlert = messageAlert;
+  const { session, status } = useSession();
+  let UserId = "";
+  let token;
+  if (typeof localStorage != undefined) {
+    UserId = localStorage.getItem("UserId");
+    token = localStorage.getItem("token");
+  }
   const [form] = Form.useForm();
   const [data, setData] = useState();
-  const [editingKey, setEditingKey] = useState('');
+  const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
+      name: "",
+      age: "",
+      address: "",
       ...record,
     });
     setEditingKey(record.key);
   };
   const cancel = () => {
-    setEditingKey('');
+    setEditingKey("");
   };
-  useEffect(()=>{
-    setData(props.data)
-  }, [props.data])
+  useEffect(() => {
+    setData(dataObj);
+  }, [dataObj]);
   const userInfo = useSession();
 
-  const save = async (key) => {
-     messageAlert('loading','Editing Client...')
+  const save = async (key, record) => {
+    messageAlert("loading", "Editing Client...");
     try {
       const row = await form.validateFields();
       const newData = [...data];
       const index = newData.findIndex((item) => key === item.key);
-const obj = {
-  id: key,
-  client_name: row.client_name,
-  client_address: row.client_address,
-  client_phone_no: row.client_phone_no,
-  client_email: row.client_email,
-  user_info_id: newData[index].user_info_id,
-  email: userInfo.data.user.email,
-};
+      console.log(record, "rowfdmdkn");
+      const obj = {
+        id: record._id,
+        name: row.name,
+        address: row.address,
+        phoneNo: row.phoneNo,
+        email: row.email,
+        userId: UserId,
+      };
       await axios
-        .post(`${ApiEndPoint}update_client_info/`, obj)
+        .put(`${ApiEndPoint}client/`, obj)
         .then((response) => {
-           messageAlert('success','Succesfully Updated Client')
-              if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, {
-                  ...item,
-                  ...row,
-                });
-                setData(newData);
-                setEditingKey("");
-              } else {
-                newData.push(row);
-                setData(newData);
-                setEditingKey("");
-              }
+          messageAlert("success", "Succesfully Updated Client");
+          if (index > -1) {
+            const item = newData[index];
+            newData.splice(index, 1, {
+              ...item,
+              ...row,
+            });
+            setData(newData);
+            setEditingKey("");
+          } else {
+            newData.push(row);
+            setData(newData);
+            setEditingKey("");
+          }
         })
         .catch((error) => {
-        messageAlert('error',error.message)
-
+          messageAlert("error", error.message);
         });
-           
-   
     } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+      console.log("Validate Failed:", errInfo);
     }
   };
+
+
+  const DeleteClient=async(record)=>{
+
+  messageAlert("loading", "Deleting Client...");
+
+  const response = await fetch(`${ApiEndPoint}client/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Connection: "Keep-Alive",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      id: record._id,
+      userId: record.userId,
+    }),
+  });
+  const dataObj = await response.json();
+  console.log("data", dataObj);
+  GetclientData();
+  if (response.status == 200) {
+    console.log("Data saved to database");
+    messageAlert("success", "Succesfully Deleted Grade");
+    // router.push("/Category");
+  } else {
+    messageAlert("error", "Error deleting...");
+    console.error("Error saving data to database");
+  }
+
+  }
   const columns = [
     {
-      title: 'Client Name',
-      dataIndex: 'client_name',
-      width: '20%',
+      title: "Client Name",
+      dataIndex: "name",
+      width: "20%",
       editable: true,
     },
     {
-      title: 'Email',
-      dataIndex: 'client_email',
-      width: '20%',
+      title: "Email",
+      dataIndex: "email",
+      width: "20%",
       editable: true,
     },
     {
-      title: 'Phone No.',
-      dataIndex: 'client_phone_no',
-      width: '20%',
-      editable: true,
-     
-    },
-    {
-      title: 'Address',
-      dataIndex: 'client_address',
-      width: '30%',
+      title: "Phone No.",
+      dataIndex: "phoneNo",
+      width: "20%",
       editable: true,
     },
     {
-      title: 'Action',
-      dataIndex: 'operation',
+      title: "Address",
+      dataIndex: "address",
+      width: "30%",
+      editable: true,
+    },
+    {
+      title: "Action",
+      dataIndex: "operation",
       render: (_, record) => {
         const editable = isEditing(record);
-        return <div className={styles.buttonbox}>
-          {
- editable ? (
-  <span>
-    <Typography.Link
-      onClick={() => save(record.key)}
-      style={{
-        marginRight: 8,
-      }}
-    >
-      Save
-    </Typography.Link>
-    <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-      <a>Cancel</a>
-    </Popconfirm>
-  </span>
-) : (
-  <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-     <FaEdit className={styles.icon_edit}/>
-  </Typography.Link>
-  
-) 
-          }
-<span>
-{
-            data.length >= 1 ? (
+        return (
+          <div className={styles.buttonbox}>
+            {editable ? (
+              <span>
+                <Typography.Link
+                  onClick={() => save(record.key, record)}
+                  style={{
+                    marginRight: 8,
+                  }}
+                >
+                  Save
+                </Typography.Link>
+                <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                  Cancel
+                </Popconfirm>
+              </span>
+            ) : (
+              <Typography.Link
+                disabled={editingKey !== ""}
+                onClick={() => edit(record)}
+              >
+                <FaEdit className={styles.icon_edit} />
+              </Typography.Link>
+            )}
+            <span>
+              {data.length >= 1 ? (
                 <Popconfirm
-                              title="Delete the Item"
-                              description="Are you sure to delete this item?"
-                              onConfirm={() => handleDelete(record.key)}
-                            >
-
-                              <a><DeleteOutlined className={styles.icon_del} /></a>
-                            </Popconfirm>
-             
-            ) : null
-          }
-</span>
-         
-        </div>
-       
-       
+                  title="Delete the Item"
+                  description="Are you sure to delete this item?"
+                  onConfirm={() => DeleteClient(record)}
+                >
+                  
+                    <DeleteOutlined className={styles.icon_del} />
+                  
+                </Popconfirm>
+              ) : null}
+            </span>
+          </div>
+        );
       },
     },
   ];
@@ -194,38 +223,14 @@ const obj = {
       ...col,
       onCell: (record) => ({
         record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        inputType: col.dataIndex === "age" ? "number" : "text",
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
       }),
     };
   });
-  const handleDelete = async(key) => {
-  messageAlert('loading','Deleting Client...')
-const newData = data.filter((item) => item.key !== key);
-const newData1 = [...data];
-        const index = newData1.findIndex((item) => key === item.key);
-   
-    const obj = {
-      id: key,
-      email: userInfo.data.user.email,
-      user_info_id: newData1[index].user_info_id,
-    };
-     await axios
-       .delete(`${ApiEndPoint}delete_client_info/`, { params: obj })
-       .then((response) => {
-         console.log("success", response);
-       messageAlert('success','Succesfully Delete Client')
-       setData(newData);
-
-       })
-       .catch((error) => {
-         console.log("error", error);
-        messageAlert('error',error.message)
-
-       });
-  };
+  
   return (
     <Form form={form} component={false}>
       <Table
@@ -240,10 +245,9 @@ const newData1 = [...data];
         rowClassName="editable-row"
         pagination={{
           onChange: cancel,
-          pageSizeOptions: ['5'],
-          pageSize: 5
+          pageSizeOptions: ["5"],
+          pageSize: 5,
         }}
-       
       />
     </Form>
   );

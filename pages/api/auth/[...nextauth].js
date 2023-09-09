@@ -4,7 +4,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 // import axios from "axios";
 import axios from "axios";
 import { ApiEndPoint } from "@/public/ApiEndPoint";
-import { redirect } from "next/dist/server/api-utils";
 export const authOptions = {
   // Configure one or more authentication providers
   providers: [
@@ -19,7 +18,7 @@ export const authOptions = {
         var result = {
           name: credentials.name,
           email: credentials.email,
-          id: credentials.id
+          id: credentials.id,
         };
         return result;
       },
@@ -39,19 +38,23 @@ export const authOptions = {
         img: user.user.image,
         signupMethod: "google",
       };
+      console.log(obj, "obj", user);
       try {
         await axios
           .post(`${ApiEndPoint}users/`, obj)
-          .then((res) => {})
+          .then((res) => {
+            console.log(res.data, "res");
+            
+          })
           .catch((e) => {
             console.log("error", e);
           });
       } catch (error) {
         console.log("error", error);
       }
-
-      return true;
+      return true;  
     },
+   
   },
 };
 export default NextAuth(authOptions)

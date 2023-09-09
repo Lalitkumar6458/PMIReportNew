@@ -4,6 +4,7 @@ import { PlusOutlined,LoadingOutlined  } from '@ant-design/icons';
 import { Upload, message } from 'antd'
 import ReportlatterPad from './ReportlatterPad';
 import {PDFViewer,BlobProvider , PDFDownloadLink } from '@react-pdf/renderer';
+import Link from 'next/link';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -191,9 +192,9 @@ formId==2?null:
 
                     {/* <iframe src={url} title="Example PDF" filename="exmple.pdf" width="100%" height="500px"></iframe> */}
 
-                    <a href={url}  className="btnBox mx-3" target="_blank">
+                    <Link href={url != undefined?url:""}  className="btnBox mx-3" target="_blank">
                       View PDF
-                    </a>
+                    </Link>
                     </>
                   )
                 }

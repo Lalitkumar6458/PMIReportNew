@@ -7,7 +7,7 @@ const BorderBox = ({children,title}) => {
   return (
     <div className='Borbox_con'>
 <div className='Border_box'>
-<button className="small_height_b" onClick={()=>{smallbox?setSmallbox(false):setSmallbox(true)}}>{smallbox?<HiArrowNarrowDown/>:<HiArrowNarrowUp/>}</button>
+<button type='button' className="small_height_b" onClick={()=>{smallbox?setSmallbox(false):setSmallbox(true)}}>{smallbox?<HiArrowNarrowDown/>:<HiArrowNarrowUp/>}</button>
       <h2>{title}</h2>
       <div className='hideandShow' style={{display:smallbox?"none":""}}>
 

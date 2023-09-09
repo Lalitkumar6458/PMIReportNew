@@ -138,7 +138,6 @@ border-radius: 6px;
     border-bottom:1px solid rgba(51, 51, 51, 0.1);
 }
 .inputlabel{
-  flex-basis: 80%;
 }
  .inputlabel label{
     
@@ -151,7 +150,6 @@ line-height: 30px;
 display: flex;
 align-items: center;
 color: #000000;
-    flex-basis: 20%;
     text-transform: capitalize;
 
 
@@ -216,11 +214,7 @@ font-size: 16px !important;
   .Editicon{
     font-size: 22px;
   }
-  .inputlabel{
-    flex-basis: 70%;
-    width: 70%;
 
-  }
   .CancelIcon,.Updateicon{
  
     height: 30px;

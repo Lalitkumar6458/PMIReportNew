@@ -7,6 +7,7 @@ import { useState } from "react";
 import { getSession} from "next-auth/react"
 import ReportFormate from '@/Components/Settings/ReportFormate';
 import LatterPad from '@/Components/Settings/latterPad/LatterPad';
+import MachineInfo from '@/Components/Settings/MachineInfo';
 
 const Settings = ({session}) => {
   const[activetab,setActivetab]=useState("User Profile")
@@ -14,21 +15,25 @@ const Settings = ({session}) => {
       {
         key: 1,
         label: "User Profile",
-        children: <Profile/>,
-
+        children: <Profile />,
       },
       {
         key: 2,
-        label: "Latter Pad",
-        children: <LatterPad/>,
+        label: "Pmi Machine Info",
+        children: <MachineInfo/>,
       },
       {
         key: 3,
-        label: "Report Formate",
-        children: <ReportFormate/>,
+        label: "Latter Pad",
+        children: <LatterPad />,
       },
       {
         key: 4,
+        label: "Report Formate",
+        children: <ReportFormate />,
+      },
+      {
+        key: 5,
         label: "Help",
         children: "Help",
       },

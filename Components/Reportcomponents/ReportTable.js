@@ -128,19 +128,18 @@ const [tableview, setTableview] = useState(false);
 
  
   let columdata=[]
-  gradeDataC?Object.keys(gradeDataC).map((item)=>{
-
-    if(item==="id"||item==="key"){
-
-    }else{
-      columdata.push({
-        title:item,
-        dataIndex:item,
-        editable: true,
+  gradeDataC
+    ? gradeDataC.chemical.map((item) => {
+        if (item === "id" || item === "key") {
+        } else {
+          columdata.push({
+            title: item.Element,
+            dataIndex: item.Element,
+            editable: true,
+          });
+        }
       })
-    }
-   
-  }):null
+    : null;
   const defaultColumns = [
     {
       title: "Sr No.",
@@ -262,7 +261,7 @@ setObjSizeQty({
       key:getOldData.length===0?1:parseInt(getOldData[getOldData.length-1]["key"])+1,
       srno:getOldData.length===0?1:parseInt(getOldData[getOldData.length-1]["key"])+1,
       ...objSizeQty,
-      ...RandomGradeData({data:gradeDataC}),
+      ...RandomGradeData({data:gradeDataC?.chemical}),
       remark:"Ok"
      }
     setDataSource([...getOldData, data_get]);
@@ -329,7 +328,7 @@ setObjSizeQty({
        
           <div className="col-4 d-flex col-md-2">
             <div className={styles.AddButon}>
-              <Button type="primary" onClick={AddreportItem} disabled={Gradename?false:true}>
+              <Button type="primary" onClick={AddreportItem}>
                 <PlusCircleOutlined />
                 ADD
               </Button>

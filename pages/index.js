@@ -7,7 +7,9 @@ import { getSession, useSession, signOut } from "next-auth/react";
 import {WhatsappShareButton,WhatsappIcon} from 'next-share'
 import axios from "axios";
 import { ApiEndPoint } from "@/public/ApiEndPoint";
+import { useEffect } from "react";
 export default function Home({ dashBoardData }) {
+        
   const { data: session, status } = useSession();
   function handleSignOut() {
     signOut();
@@ -19,15 +21,18 @@ export default function Home({ dashBoardData }) {
 }
 // Guest
 function Guest() {
+
+Router.push("/login");
+
   return (
     <main className="container mx-auto text-center py-20">
       <h3 className="text-4xl font-bold">Guest Homepage</h3>
 
       <div className="flex justify-center">
         <Link href={"/login"}>
-          <a className="mt-5 px-10 py-1 rounded-sm bg-indigo-500 text-gray-50">
+          
             Sign In
-          </a>
+ 
         </Link>
       </div>
     </main>
@@ -35,9 +40,45 @@ function Guest() {
 }
 
 function User({ session, handleSignOut,dashBoardData }) {
+   let UserId = "";
+   let token;
+   if (typeof localStorage != undefined) {
+     UserId = localStorage.getItem("UserId");
+     token = localStorage.getItem("token");
+   }
 const redirectOnPage=(pagename)=>{
 Router.push(pagename);
 }
+
+const getUserLogin=async()=>{
+  // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+  await axios
+    .post(`${ApiEndPoint}googlelogin/`, { email: session.user.email })
+    .then((response) => {
+      console.log("response 7h", response);
+      if (response.status == 200) {
+        // setClientData(response.data.data);
+        localStorage.setItem("UserId", response.data.data.id);
+        // messageAlert("success", "Succesfully Get all client data");
+      } else if (response.status == 201) {
+        // setClientData(response.data.data);
+        // messageAlert("success", "Data Not Found");
+      }
+    })
+    .catch((error) => {
+      // dispatch({
+      //   type: ERROR_FINDING_USER
+      // })
+      console.log(error, "error");
+      // messageAlert("error", error.message);
+    });
+}
+
+
+useEffect(()=>{
+getUserLogin()
+},[])
   return (
     <>
       <Layout title="Dashboard" paddingTop="60px">

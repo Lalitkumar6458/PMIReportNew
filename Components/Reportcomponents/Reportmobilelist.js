@@ -9,86 +9,89 @@ import {
    
   } from "antd";
   import RandomGradeData from '../SmallComponets/RandomGradeData';
-const Reportmobilelist = ({gradeDataC,Gradename}) => {
-const { TextArea } = Input;
+const Reportmobilelist = ({ gradeDataC, Gradename, chemicalRange }) => {
+  const { TextArea } = Input;
 
-    const [tableview, setTableview] = useState(false)
-    var getOldData=JSON.parse(localStorage.getItem("reportAddedData"))||[]
-    const[addedData,setAddedData]=useState([...getOldData])
-    const Data=[
-        {
-            id:1,
-            srno:1,
-            Size:"30MMX204MM Circle",
-            qty:"3pc",
-            remark:"Ok"
+  const [tableview, setTableview] = useState(false);
+  var getOldData = JSON.parse(localStorage.getItem("reportAddedData")) || [];
+  const [addedData, setAddedData] = useState([...getOldData]);
+  const Data = [
+    {
+      id: 1,
+      srno: 1,
+      Size: "30MMX204MM Circle",
+      qty: "3pc",
+      remark: "Ok",
+    },
+    {
+      id: 2,
+      srno: 2,
+      Size: "50MMX404MM Circle",
+      qty: "6pc",
+      remark: "Ok",
+    },
+  ];
 
-        },
-        {
-            id:2,
-            srno:2,
-            Size:"50MMX404MM Circle",
-            qty:"6pc",
-            remark:"Ok"
-            
-        }
-    ]
+  const [addeddata, setAddeddata] = useState([]);
+  const [countadd, setCountAdd] = useState(1);
 
-    const[addeddata,setAddeddata] =useState([])
-    const[countadd,setCountAdd] =useState(1)
+  const [objSizeQty, setObjSizeQty] = useState({
+    size: "",
+    qty: "",
+    heatno: "",
+  });
 
-
-    const[objSizeQty,setObjSizeQty]=useState({
-     size:"",
-     qty:"",
-     heatno:""
-    })
- 
-   const report_grade_edit=(data)=>{
-    var obj={
-      gradeDataC,
-      data
-    }
+  const report_grade_edit = (data) => {
+    var obj = {
+      gradeDataC: gradeDataC?.chemical,
+      data,
+      chemicalRange,
+    };
     // Router.push("/ReportEdit")
-    var url="/ReportEdit"
-    Router.push({
-      pathname:url,
-      query: { data: JSON.stringify(obj)}
-  },url)
-}
-   
-  
-    const onSizeQtyHandler=(e)=>{
-  const{name,value}=e.target
-  
-  setObjSizeQty({
-   ...objSizeQty,
-   [name]:value
-  })
-    }
-   
-    const AddreportItem=()=>{
-      var getOldData=JSON.parse(localStorage.getItem("reportAddedData"))||[]
+    var url = "/ReportEdit";
+    Router.push(
+      {
+        pathname: url,
+        query: { data: JSON.stringify(obj) },
+      },
+      url
+    );
+  };
 
-      
-       
-      const data_get={
-        key:getOldData.length===0?1:parseInt(getOldData[getOldData.length-1]["key"])+1,
-        srno:getOldData.length===0?1:parseInt(getOldData[getOldData.length-1]["key"])+1,
-        ...objSizeQty,
-        ...RandomGradeData({data:gradeDataC}),
-        remark:"Ok"
-       }
-       setAddedData([
-        ...getOldData,
-        data_get
-    ])
+  const onSizeQtyHandler = (e) => {
+    const { name, value } = e.target;
 
-    localStorage.setItem("reportAddedData",JSON.stringify([...getOldData,data_get]))
-    setCountAdd(countadd+1)
-   
-    }
-    
+    setObjSizeQty({
+      ...objSizeQty,
+      [name]: value,
+    });
+  };
+
+  const AddreportItem = () => {
+    var getOldData = JSON.parse(localStorage.getItem("reportAddedData")) || [];
+
+    const data_get = {
+      key:
+        getOldData.length === 0
+          ? 1
+          : parseInt(getOldData[getOldData.length - 1]["key"]) + 1,
+      srno:
+        getOldData.length === 0
+          ? 1
+          : parseInt(getOldData[getOldData.length - 1]["key"]) + 1,
+      ...objSizeQty,
+      ...RandomGradeData({ data: gradeDataC.chemical }),
+      remark: "Ok",
+    };
+    setAddedData([...getOldData, data_get]);
+
+    localStorage.setItem(
+      "reportAddedData",
+      JSON.stringify([...getOldData, data_get])
+    );
+    setCountAdd(countadd + 1);
+  };
+
   return (
     <>
       <div className={css.report_sizeqty}>
@@ -134,7 +137,7 @@ const { TextArea } = Input;
           </div>
           <div className="col-4 col-md-2 d-flex">
             <div className={css.AddButon}>
-              <Button type="primary" onClick={AddreportItem} disabled={Gradename?false:true}>
+              <Button type="primary" onClick={AddreportItem}>
                 <PlusCircleOutlined />
                 ADD
               </Button>
@@ -175,6 +178,6 @@ const { TextArea } = Input;
       </div>
     </>
   );
-}
+};
 
 export default Reportmobilelist

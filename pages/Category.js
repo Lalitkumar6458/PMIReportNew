@@ -1,7 +1,7 @@
 import Layout from '@/Components/Layout'
 import React, { useState, useEffect } from 'react'
 import styles from "../styles/Category.module.css"
-import { Input,Tooltip,AutoComplete,message } from 'antd';
+import { Input, Tooltip, AutoComplete, message, Modal } from "antd";
 import Button from '@/Components/SmallComponets/Button'
 import { UserAddOutlined } from '@ant-design/icons';
 import ClientTable from '@/Components/SmallComponets/ClientTable'
@@ -10,6 +10,7 @@ import EditTable from '@/Components/SmallComponets/EditTable'
 import {HiArrowNarrowDown,HiArrowNarrowUp } from "react-icons/hi";
 import { getSession, useSession, signOut } from "next-auth/react"
 import { ApiEndPoint } from '@/public/ApiEndPoint';
+import ClientAdd from '@/Components/FormCon/ClientAdd';
 
 
 const formatNumber = (value) => new Intl.NumberFormat().format(value);
@@ -62,6 +63,23 @@ const Category = () => {
   const [value, setValue] = useState('');
   const[clientData,setClientData]=useState([])
   const[clientInfo,setClientInfo]=useState(initialState)
+  let UserId = "";
+  let token;
+  if (typeof localStorage != undefined) {
+    UserId = localStorage.getItem("UserId");
+    token = localStorage.getItem("token");
+  }
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+      setIsModalOpen(true);
+    };
+      const handleOk = () => {
+        setIsModalOpen(false);
+      };
+      const handleCancel = () => {
+        setIsModalOpen(false);
+      };
+
   function messageAlert(type,content){
     const key = 'updatable';
 
@@ -80,7 +98,7 @@ const AddClient=()=>{
       .then((response) => {
        messageAlert('success','Succesfully Added Client')
 
-        GetclientData()
+        GetclientData() 
       })
       .catch((error) => {
         messageAlert('error',error.message)
@@ -91,23 +109,32 @@ const AddClient=()=>{
 
 const GetclientData=async()=>{
 
+    messageAlert("loading", "Geting Client Data...");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    const data_obj = {
+      userId: UserId,
+    };
     await axios
-      .get(`${ApiEndPoint}get_client_data/`, { params: { username:session.user.name,email:session.user.email } }, {
-        "Content-Type": "application/json",
-        Connection: "Keep-Alive",
-        Authorization: `Bearer test`,
-      })
+      .get(`${ApiEndPoint}client/`, { params: data_obj })
       .then((response) => {
-
-         setClientData(response.data.data)
-
+        console.log("response 7h", response);
+        if (response.status == 200) {
+           setClientData(response.data.data);
+          messageAlert("success", "Succesfully Get all client data");
+        }else if (response.status == 201) {
+              setClientData(response.data.data);
+              messageAlert("success", "Data Not Found");
+        }
       })
       .catch((error) => {
         // dispatch({
         //   type: ERROR_FINDING_USER
         // })
         console.log(error, "error");
+        messageAlert("error", error.message);
       });
+
+   
 
 
   }
@@ -137,70 +164,58 @@ const handleValueChange=(e)=>{
     return (
       <Layout title="Category">
         {contextHolder}
-       <div className={styles.Category_con}>
-        
-   <div className={smallbox?'Border_box height_down':'Border_box'}>
-    <h2>Add Client</h2>
-    <button className="small_height_b" onClick={()=>{smallbox?setSmallbox(false):setSmallbox(true)}}>{smallbox?<HiArrowNarrowDown/>:<HiArrowNarrowUp/>}</button>
-  
-    <div className={styles.input_box} style={{display:smallbox?"none":""}}>
-  <div className={styles.input_div}>
-    <label>Name</label>
-    <Input placeholder="Enter Client Name.." name="name" value={clientInfo.name} onChange={handleValueChange} />
-    
-  </div>
-  <div className={styles.input_div}>
-    <label>Email</label>
-    <Input placeholder="Enter Email.." name="email" value={clientInfo.email} onChange={handleValueChange} />
-    
-  </div>
-  <div className={styles.input_div}>
-    <label>Phone No.</label>
-    <NumericInput
-        style={{
-         
-        }}
-        value={value}
-        onChange={setValue}
-      />
-    
-  </div> 
-  <div className={styles.input_div}>
-    <label>Address</label>
-    <Input placeholder="Enter Address.."  name="address" value={clientInfo.address} onChange={handleValueChange} />
-    
-  </div>
-  <Button content={{title:"Add",icon:<UserAddOutlined className='icon_btn' />,event:AddClient}}/>
-    </div>
-   </div>
-       <div className={styles.Client_allData}>
-        <div className={styles.search_box}>
-        <AutoComplete
-      style={{
-        width: 200,
-      border:"1px solid #081A51",
-      borderRadius:"5px",
-      popupClassName:"Search_input"
-      }}
-      options={options}
-      placeholder="Search Grade Chemical.."
-      filterOption={(inputValue, option) =>
-        option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-      }
-    />
-        </div>
-  
-        <div className={styles.client_table}>
-          <div className={styles.Client_cont}>
-  
-                <ClientTable data={clientData} messageAlert={messageAlert}/>
+        <div className={styles.Category_con}>
+          <div className="flex items-center justify-end">
+            <button
+              className="bg-mainDark text-white font-inter text-[2rem] rounded-md py-3 px-3"
+              onClick={showModal}
+            >
+              Add Client
+            </button>
           </div>
+
+          <div className={styles.Client_allData}>
+            <div className={styles.search_box}>
+              <AutoComplete
+                style={{
+                  width: 200,
+                  border: "1px solid #081A51",
+                  borderRadius: "5px",
+                  popupClassName: "Search_input",
+                }}
+                options={options}
+                placeholder="Search Grade Chemical.."
+                filterOption={(inputValue, option) =>
+                  option.value
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                }
+              />
+            </div>
+
+            <div className={styles.client_table}>
+              <div className={styles.Client_cont}>
+                <ClientTable
+                  GetclientData={GetclientData}
+                  dataObj={clientData}
+                  messageAlert={messageAlert}
+                />
+              </div>
               <EditTable data={clientData} />
+            </div>
+          </div>
         </div>
-       </div>
-       </div>
+
+        <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+          <div className="">
+            <ClientAdd
+              GetclientData={GetclientData}
+              setIsModalOpen={setIsModalOpen}
+            />
+          </div>
+        </Modal>
       </Layout>
-    )
+    );
   }
   
 

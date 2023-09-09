@@ -32,6 +32,12 @@ body{
   background: var(--dark-blue) !important;
   color: #fff !important;
 }
+.ant-input,.ant-picker{
+  border-color:var(--dark-blue) !important;
+}
+.ant-form-item{
+  margin-bottom: 10px !important;
+}
 .formClass .ant-form-item{
   margin-bottom: 0px !important;
 }

@@ -49,6 +49,8 @@ const Login_com = () => {
       password: data.password,
       callbackUrl: "/"
   })
+  console.log(status, "status");
+localStorage.setItem("statusData", JSON.stringify(status));  
   if(status.ok) router.replace(status.url)
   }
   const Loginhandler = async() => {
@@ -92,6 +94,7 @@ const Login_com = () => {
             setUsernameCheck(false);
             setPasswordCheck(false);
           } else if ((response.status = 200)) {
+            alert("response.data.data.id", response.data.data.id);
             const data = {
               name: response.data.data.username,
               email: response.data.data.email,
@@ -136,8 +139,15 @@ setLoginSignup(!loginSignup);
 
    // Google Handler function
 const handleGoogleLogin = async () => {
-
-     signIn("google", { callbackUrl: "/" });
+const userId = await signIn("google", { callbackUrl: "/" });
+if (userId) {
+  // User ID is available
+  console.log("User ID from login:", userId);
+  // Do something with the user ID
+} else {
+  // Handle the case where sign-in was unsuccessful
+  console.error("Google sign-in failed");
+}
    
 
 };
@@ -153,9 +163,10 @@ const handleGoogleLogin = async () => {
           <div className={css.login_con}>
             <h1>Login</h1>
             <div className={css.Input_field_signup}>
-              <label>Username</label>
+              <label>User Email</label>
               <Input
-                placeholder="Enter your username"
+                placeholder="Enter your Email"
+                size="large"
                 onChange={(e) => {
                   setUsername(e.target.value);
                 }}
@@ -177,6 +188,7 @@ const handleGoogleLogin = async () => {
               <label>Password</label>
 
               <Input.Password
+                size="large"
                 placeholder="Enter password"
                 status={passwordCheck ? "error" : null}
                 onChange={(e) => {
@@ -188,16 +200,22 @@ const handleGoogleLogin = async () => {
                 }
               />
             </div>
-            <Button type="primary" onClick={Loginhandler} loading={Loading}>
+            <Button
+              size="large"
+              type="primary"
+              onClick={Loginhandler}
+              loading={Loading}
+            >
               Login
             </Button>
             <div className={css.LoginGoogle}>
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className={css.button_custom}
+                className={`flex items-center gap-3 rounded-md bg-white px-5 h-[60px] border shadow-md text-[2.1rem] `}
               >
-                <Image src={imgG} alt="google image" width="20" height={20} /> Sign In with Google
+                <Image src={imgG} alt="google image" width="22" height={22} />
+                Sign In with Google
               </button>
             </div>
             <div className={css.login_btn}>

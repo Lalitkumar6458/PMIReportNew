@@ -1,7 +1,7 @@
 import React from 'react'
 
 const RandomGradeData = ({data}) => {
- 
+ console.log("get data six",data)
     
     function getRandomValueInRange(range) {
         if (range.includes('max') || range.includes('Max')|| range.includes('MAX')) {
@@ -23,17 +23,27 @@ const RandomGradeData = ({data}) => {
     function generateRandomData(inputData) {
         const result = {};
 
-        for (const key in inputData) {
-            const value = inputData[key];
+       console.log("inputData", inputData);
+            inputData.map((item) => {
+              const value = item.percent;
+              console.log("value", value);
 
-            if (value.includes('-') || value.includes('max') || value.includes('<')|| value.includes('Max')|| value.includes('MAX')) {
+              if (
+                value.includes("-") ||
+                value.includes("max") ||
+                value.includes("<") ||
+                value.includes("Max") ||
+                value.includes("MAX")
+              ) {
                 const randomValue = getRandomValueInRange(value);
-                    result[key] = randomValue.toFixed(2);
-              
-            } else {
-                result[key] = value;
-            }
-        }
+                result[item.Element] = randomValue.toFixed(2);
+              } else {
+                result[item.Element] = value;
+              }
+            });
+
+           
+        
         
         return result;
     }

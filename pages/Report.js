@@ -10,6 +10,7 @@ import wapp from "../public/Images/wappicon.png"
 import email from "../public/Images/email.png"
 import Image from "next/image";
 import moment from 'moment';
+import dayjs from "dayjs"
 import { ApiEndPoint } from "@/public/ApiEndPoint";
 import {
   FileWordOutlined,
@@ -26,8 +27,10 @@ import {
   Input,
   Button,
   Dropdown,
+  Form,
   Divider,
  Drawer, Radio,
+ DatePicker
 } from "antd";
 import ReportTable from "@/Components/Reportcomponents/ReportTable";
 import { BsTable, BsMenuButtonWide } from "react-icons/bs";
@@ -45,7 +48,21 @@ const Report = ({ reportData,session }) => {
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [tableview, setTableview] = useState(false);
-  
+  const[getAllData,setGetAllData]=useState({})
+  const [SelecteGradeData, setSelecteGradeData] = useState({});
+
+  const [AgencyUser, setAgencyUser] = useState('');
+
+    const [form] = Form.useForm();
+       let UserId = "";
+       let token;
+       if (typeof localStorage != undefined) {
+         UserId = localStorage.getItem("UserId");
+         token = localStorage.getItem("token");
+       }
+  const onFinish = (values) => {
+    console.log(values,"report forms")
+  }
   const [items2, setItems2] = useState(reportData?.instrument_id?reportData?.instrument_id?.map((item,index)=>{
     return{
       value:item,
@@ -207,6 +224,8 @@ const DataReport={
   var yyyy = today.getFullYear();
 
   today = mm + "/" + dd + "/" + yyyy;
+let todayData=dd+"-"+mm+"-"+yyyy
+console.log("todayData", todayData);
   const menuProps = {
     items,
     onClick: handleMenuClick,
@@ -253,7 +272,36 @@ key:index,
     }
   })||[]
   
-  
+  const getGradeChemical=async(value)=>{
+    console.log("value getGradeChemical", value);
+     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+     const data_obj = {
+       userId: UserId,
+       grade: value,
+     };
+     await axios
+       .get(`${ApiEndPoint}getgradedata/`, { params: data_obj })
+       .then((response) => {
+         console.log("response 7h", response);
+         if (response.status == 200) {
+            setSelecteGradeData(response.data.data[0]);
+           // messageAlert("success", "Succesfully Get all client data");
+         } else if (response.status == 201) {
+            setSelecteGradeData(response.data.data[0]);
+
+           // messageAlert("success", "Data Not Found");
+         }
+       })
+       .catch((error) => {
+         // dispatch({
+         //   type: ERROR_FINDING_USER
+         // })
+         console.log(error, "error");
+         //   messageAlert("error", error.message);
+       });
+
+
+  }
 
   const CreatePdf = () => {
     alert("hell" + partyname);
@@ -282,9 +330,35 @@ key:index,
     }
 
   }
+  const getallData = async () => {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    const data_obj = {
+      userId: UserId,
+    };
+    await axios
+      .get(`${ApiEndPoint}getalldata/`, { params: data_obj })
+      .then((response) => {
+        console.log("response 7h", response);
+        if (response.status == 200) {
+          setGetAllData(response.data.data);
+          // messageAlert("success", "Succesfully Get all client data");
+        } else if (response.status == 201) {
+          setGetAllData(response.data.data);
+          // messageAlert("success", "Data Not Found");
+        }
+      })
+      .catch((error) => {
+        // dispatch({
+        //   type: ERROR_FINDING_USER
+        // })
+        console.log(error, "error");
+        //   messageAlert("error", error.message);
+      });
+  };
 
 
   useEffect(()=>{
+    getallData()
     let getDataLocal=localStorage.getItem('CreatedData')
     if(
       getDataLocal
@@ -301,7 +375,10 @@ key:index,
     }
 
   },[])
-
+  useEffect(() => {
+setAgencyUser(getAllData?.UserData?.name);
+console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
+  }, [getAllData]);
   const commonOnChangeFun=(value,setvalue,name)=>{
 
 setvalue(value)
@@ -322,289 +399,430 @@ setvalue(value)
     localStorage.setItem("CreatedData",JSON.stringify({[name]:value}))
   }
   }
+  console.log("todayData formfdjvh", todayData);
   return (
     <>
       <Layout title="Report">
-        <div className={styles.report_con}>
-          <BorderBox title={"Report Infomation"}>
-            <div className="row">
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Party Name </label>
-                  <Select
-                    className={styles.Seletcbox}
-                    showSearch
-                    placeholder="Select a Party"
-                    optionFilterProp="children"
-                    onChange={(value) => commonOnChangeFun(value,setPartyName,"partyname")}
-                    onSearch={onSearch}
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    options={partName}
-                    value={partyname}
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Agency Name</label>
-                  <Input
-                    placeholder=""
-                    value={agencyName}
-                    onChange={(e) => commonOnChangeFun(e.target.value,setAgencyName,'agencyName')}
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label> PMI Location </label>
-                  <Input
-                    placeholder="Basic usage"
-                    value={locationName}
-                    onChange={(e) =>commonOnChangeFun(e.target.value,setLocationName,'locationName')}
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Date</label>
-                  {/* <DatePicker
-                    onChange={onChangedate}
-                    className={styles.datePicker}
-                    value={date}
-                    format="YYYY-MM-DD"
-                  /> */}
-                  <input className={styles.dateinput} type='date' value={date} onChange={(e)=> commonOnChangeFun(e.target.value,setDate,'date')} />  
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>PMI Rreport No.</label>
-                  <Input
-                    placeholder="Basic usage"
-                    value={reportNo}
-                    onChange={(e) => commonOnChangeFun(e.target.value,setReportNo,'reportNo') }
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Purchase Order</label>
-                  <Input
-                    placeholder="Basic usage"
-                    value={poNo}
-                    onChange={(e) => commonOnChangeFun(e.target.value,setPoNo,'poNo') }
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Instrument Id </label>
-                  <Select
-                    className={styles.Seletcbox}
-                    showSearch
-                    placeholder="Select a Instrument Id "
-                    optionFilterProp="children"
-                    onChange={(value) => commonOnChangeFun(value,setInstrumentValue,'instrumentValue')}
-                    value={instrumentValue}
-                    onSearch={onSearch}
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <Divider
-                          style={{
-                            margin: "8px 0",
-                          }}
-                        />
-
-                        <div>
-                          <Input
-                            placeholder="Please enter Instrument Id No."
-                            ref={inputRef}
-                            value={name}
-                            onChange={onNameChange}
-                          />
-                        </div>
-                        <div>
-                          <Button
-                            type="text"
-                            icon={<PlusOutlined />}
-                            onClick={addItem}
-                          >
-                            Add Instrument Id/No.
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                    options={items2}
-                  />
-                </div>
-              </div>
-              <div className="col-6 col-md-3">
-                <div className={styles.inputBox}>
-                  <label>Modal No. </label>
-                  <Select
-                    className={styles.Seletcbox}
-                    showSearch
-                    placeholder="Select a Modal No."
-                    optionFilterProp="children"
-                    onChange={(value) => commonOnChangeFun(value,setModalNoValue,'modalNovalue')}
-                    onSearch={onSearch}
-                    value={modalNovalue}
-                    filterOption={(input, option) =>
-                      (option?.label ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <Divider
-                          style={{
-                            margin: "8px 0",
-                          }}
-                        />
-
-                        <div>
-                          <Input
-                            placeholder="Please enter Modal No."
-                            ref={inputRef1}
-                            value={modalname}
-                            onChange={onModalNameChange}
-                          />
-                        </div>
-                        <div>
-                          <Button
-                            type="text"
-                            icon={<PlusOutlined />}
-                            onClick={addmodalNo}
-                          >
-                            Add Modal No.
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                    options={modalNo}
-                  />
-                </div>
-              </div>
-            </div>
-          </BorderBox>
-
-          <div className={styles.reportChemical}>
-            <BorderBox title={"Alloys Contnets "}>
-              <div className="row grade_report">
-                <div className="col-12 col-md-3">
-                  <div className={styles.inputBox}>
-                    <label>Specified Goods</label>
+        <Form
+          className=""
+          form={form}
+          name="control-hooks"
+          onFinish={onFinish}
+          initialValues={{
+            date: dayjs(todayData, "DD-MM-YYYY"),
+            agencyName: AgencyUser,
+          }}
+        >
+          <div className={styles.report_con}>
+            <BorderBox title={"Report Infomation"}>
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 px-2">
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Client Name
+                  </span>
+                  <Form.Item
+                    name="clientName"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
                     <Select
                       className={styles.Seletcbox}
-                      ref={selectRef}
+                      size="large"
                       showSearch
-                      placeholder="Enter Grade name"
+                      placeholder="Select a Client"
                       optionFilterProp="children"
-                      onSelect={SelectedGrade}
-                      onChange={(value) => commonOnChangeFun(value,setGradeName,'Gradename') }
                       onSearch={onSearch}
                       filterOption={(input, option) =>
                         (option?.label ?? "")
                           .toLowerCase()
                           .includes(input.toLowerCase())
                       }
-                      options={specifiedGrade}
-                      value={Gradename}
+                      options={getAllData?.ClientData?.map((item) => {
+                        return {
+                          label: item.name,
+                          value: item.name,
+                        };
+                      })}
                     />
-                  </div>
+                  </Form.Item>
                 </div>
-                <div className="col-12 col-md-9 align-self-center">
-                  <div className={styles.GradeChemical}>
-                    <div className={styles.GradeBox}>
-                      <h4>Grade:{Gradename}</h4>
-                    </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Agency Name
+                  </span>
+                  <Form.Item
+                    name="agencyName"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
+                    <Input
+                      defaultValue={getAllData?.UserData?.name}
+                      placeholder="Enter Agency Name"
+                      size="large"
+                    />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    PMI Location
+                  </span>
+                  <Form.Item
+                    name="location"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Pmi Location" size="large" />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Date
+                  </span>
+                  <Form.Item
+                    name="date"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
+                    <DatePicker
+                      format={"DD-MM-YYYY"}
+                      size="large"
+                      className="w-full"
+                    />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    PMI Report No.
+                  </span>
+                  <Form.Item
+                    name="pmiReportNo"
+                    rules={[
+                      {
+                        required: true,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Pmi Report No" size="large" />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Purchase Order
+                  </span>
+                  <Form.Item
+                    name="poNo"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Purchase Order" size="large" />
+                  </Form.Item>
+                </div>
 
-                   {Gradename?<div className={styles.chemicalTable}>
-                      <table>
-                        <thead>
-                          <tr>
-                            {Object.keys(gradeDataC).map((item,index) => {
-                              return (
-                                <th style={{ textTransform: "capitalize" }} key={index}>
-                                  {item}
-                                </th>
-                              );
-                            })}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            {Object.keys(gradeDataC).map((item,index) => {
-                              return (
-                                <td style={{ textTransform: "capitalize" }} key={index}>
-                                  {gradeDataC[item]}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>: <div className={styles.InfoMassage}>
-                      <h5>Select First Grade from Left Side DropDown </h5>
-                    </div>}
-                 
-                  </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Instrument Id
+                  </span>
+                  <Form.Item
+                    name="InstrumentId"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Select
+                      className={styles.Seletcbox}
+                      size="large"
+                      showSearch
+                      placeholder="Select a Instrument Id"
+                      optionFilterProp="children"
+                      onSearch={onSearch}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={getAllData?.MachineData?.map((item) => {
+                        return {
+                          label: item.instrumentId,
+                          value: item.instrumentId,
+                        };
+                      })}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Modal No.
+                  </span>
+                  <Form.Item
+                    name="ModalNo"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Select
+                      className={styles.Seletcbox}
+                      size="large"
+                      showSearch
+                      placeholder="Select Modal No."
+                      optionFilterProp="children"
+                      onSearch={onSearch}
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      options={getAllData?.MachineData?.map((item) => {
+                        return {
+                          label: item.modalNo,
+                          value: item.modalNo,
+                        };
+                      })}
+                    />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    PO Date
+                  </span>
+                  <Form.Item
+                    name="poDate"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <DatePicker className="w-full" size="large" />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Lot No.
+                  </span>
+                  <Form.Item
+                    name="lotNo"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Lot No." size="large" />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Vendor
+                  </span>
+                  <Form.Item
+                    name="vendor"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Vendor" size="large" />
+                  </Form.Item>
+                </div>
+                <div className="">
+                  <span className="text-[16px] font-inter font-medium">
+                    Bluk Item Types
+                  </span>
+                  <Form.Item
+                    name="blukItemType"
+                    rules={[
+                      {
+                        required: false,
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Enter Bluk Item Types" size="large" />
+                  </Form.Item>
                 </div>
               </div>
             </BorderBox>
-            <div className={styles.table_con_view}>
-              <div className={styles.tableView}>
-                <button
-                  className={tableview ? "" : `${styles.active}`}
-                  onClick={() => Table_view1()}
-                >
-                  <BsMenuButtonWide />
-                </button>
-                <button
-                  className={tableview ? `${styles.active}` : ""}
-                  onClick={() => Table_view()}
-                >
-                  <BsTable />
-                </button>
-              </div>
-              {tableview ? (
-                <ReportTable data={addeddata} ref={childRef} gradeDataC={gradeDataC} Gradename={Gradename} />
-              ) : (
-                <Reportmobilelist gradeDataC={gradeDataC} Gradename ={Gradename}/>
-              )}
-            </div>
 
-            <div className={styles.ButtonSave_sent}>
-              <span className={styles.save_btndrop}>
-                <Dropdown.Button
-                  menu={menuProps}
-                  placement="bottom"
-                  icon={<UserOutlined />}
-                >
-                  Save Report
-                </Dropdown.Button>
-              </span>
-              <button className={styles.saveButton} onClick={showDrawer1}>
-                Send
-                <SendOutlined />
-              </button>
-              <button className={styles.saveButton} onClick={showDrawer}>
-                Save <SaveOutlined />
-              </button>
+            <div className={styles.reportChemical}>
+              <BorderBox title={"Alloys Contnets "}>
+                <div className="flex items-center flex-col lg:flex-row gap-5 px-4">
+                  <div className="w-full lg:w-[25%]">
+                    <div className={`${styles.inputBox} w-full`}>
+                      <label>Specified Goods</label>
+                      <div className="w-full">
+                        <Form.Item
+                          name="Grade"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <Select
+                            className={styles.Seletcbox}
+                            size="large"
+                            showSearch
+                            onChange={getGradeChemical}
+                            placeholder="Select Grade"
+                            optionFilterProp="children"
+                            onSearch={onSearch}
+                            filterOption={(input, option) =>
+                              (option?.label ?? "")
+                                .toLowerCase()
+                                .includes(input.toLowerCase())
+                            }
+                            options={getAllData?.ChemicalData?.map((item) => {
+                              return {
+                                label: item.grade,
+                                value: item.grade,
+                              };
+                            })}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" w-full lg:w-[75%] align-self-center">
+                    <div className={styles.GradeChemical}>
+                      <div className={styles.GradeBox}>
+                        <h4>Grade:{SelecteGradeData?.grade}</h4>
+                      </div>
+
+                      {SelecteGradeData?.chemical ? (
+                        <div className={styles.chemicalTable}>
+                          <table>
+                            <thead>
+                              <tr>
+                                {SelecteGradeData?.chemical?.map(
+                                  (item, index) => {
+                                    return (
+                                      <th
+                                        style={{ textTransform: "capitalize" }}
+                                        key={index}
+                                      >
+                                        {item.Element}
+                                      </th>
+                                    );
+                                  }
+                                )}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                {SelecteGradeData?.chemical?.map(
+                                  (item, index) => {
+                                    return (
+                                      <td
+                                        style={{ textTransform: "capitalize" }}
+                                        key={index}
+                                      >
+                                        {item.percent}
+                                      </td>
+                                    );
+                                  }
+                                )}
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className={styles.InfoMassage}>
+                          <h5>Select First Grade from Left Side DropDown </h5>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </BorderBox>
+              <div className={styles.table_con_view}>
+                <div className={styles.tableView}>
+                  <button
+                    type="button"
+                    className={tableview ? "" : `${styles.active}`}
+                    onClick={() => Table_view1()}
+                  >
+                    <BsMenuButtonWide />
+                  </button>
+                  <button
+                    type="button"
+                    className={tableview ? `${styles.active}` : ""}
+                    onClick={() => Table_view()}
+                  >
+                    <BsTable />
+                  </button>
+                </div>
+                {tableview ? (
+                  <ReportTable
+                    data={addeddata}
+                    ref={childRef}
+                    gradeDataC={SelecteGradeData}
+                    Gradename={Gradename}
+                  />
+                ) : (
+                  <Reportmobilelist
+                    gradeDataC={SelecteGradeData}
+                    Gradename={Gradename}
+                    chemicalRange={SelecteGradeData?.chemical}
+                  />
+                )}
+              </div>
+
+              {/* <div className={styles.ButtonSave_sent}>
+                <span className={styles.save_btndrop}>
+                  <Dropdown.Button
+                    menu={menuProps}
+                    placement="bottom"
+                    icon={<UserOutlined />}
+                  >
+                    Save Report
+                  </Dropdown.Button>
+                </span>
+                <button className={styles.saveButton} onClick={showDrawer1}>
+                  Send
+                  <SendOutlined />
+                </button>
+                <button className={styles.saveButton} onClick={showDrawer}>
+                  Save <SaveOutlined />
+                </button>
+              </div> */}
             </div>
           </div>
-        </div>
+          <Form.Item>
+            <div className="flex items-center justify-center gap-3 mt-4">
+              <button
+                type="button"
+                className="rounded h-[40px] px-3 font-poppins text-[1.4rem] border border-mainDark"
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-mainDark text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
+                type="sumbit"
+              >
+                Create Report
+              </button>
+            </div>
+          </Form.Item>
+        </Form>
         <Drawer
           placement={placement}
           closable={false}

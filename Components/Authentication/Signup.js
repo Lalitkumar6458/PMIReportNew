@@ -159,6 +159,7 @@ const Signup = (props) => {
         <div className={css.Input_field_signup}>
           <label>Username</label>
           <Input
+            size="large"
             placeholder="Enter your username"
             onChange={(e) => {
               setUsername(e.target.value);
@@ -180,6 +181,7 @@ const Signup = (props) => {
         <div className={css.Input_field_signup}>
           <label>Email</label>
           <Input
+            size="large"
             placeholder="Enter your Email"
             onChange={(e) => {
               setEmail(e.target.value);
@@ -201,6 +203,7 @@ const Signup = (props) => {
         <div className={css.Input_field_signup}>
           <label>Password</label>
           <Input.Password
+            size="large"
             placeholder="Enter password"
             status={passwordCheck ? "error" : null}
             onChange={(e) => {
@@ -215,6 +218,7 @@ const Signup = (props) => {
         <div className={css.Input_field_signup}>
           <label>Confirm Password</label>
           <Input.Password
+            size="large"
             placeholder="Enter Confirm password"
             status={confirmpasswordCheck ? "error" : null}
             onChange={(e) => {
@@ -226,16 +230,25 @@ const Signup = (props) => {
             }
           />
         </div>
-        <Button type="primary" onClick={Loginhandler} loading={Loading}>
+        <Button
+          size="large"
+          type="primary"
+          onClick={Loginhandler}
+          loading={Loading}
+        >
           Submit
         </Button>
 
         <div className={css.login_btn}>
           <span>
             Already have an account?{" "}
-            <Link href="/login"
-              
-              style={{ cursor: "pointer", display: "inline-block", color:"blue" }}
+            <Link
+              href="/login"
+              style={{
+                cursor: "pointer",
+                display: "inline-block",
+                color: "blue",
+              }}
             >
               Login Here
             </Link>

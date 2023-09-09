@@ -1,45 +1,78 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import css from "../../styles/Settings.module.css"
 import { IoLogOutOutline,IoClose } from "react-icons/io5";
 import { BiEdit } from "react-icons/bi";
 import { BsCheckLg } from "react-icons/bs";
 import { HiCheck } from "react-icons/hi2";
+import {  Modal } from "antd";
 import { getSession, useSession, signOut } from "next-auth/react"
+import axios from 'axios';
+import { ApiEndPoint } from '@/public/ApiEndPoint';
+import UserForm from './UserForm';
 const Profile = () => {
+    const[userData,setUserData]=useState({})
+const [isModalOpen, setIsModalOpen] = useState(false);
+
     const { data: session } = useSession()
-    const[UpdateValue,setUpdatevalue]=useState({
-        name:"Lalit kumar",
-        email:"lalitkumar@gmail.com",
-        password:"******er85349",
-        phone:"+91 98775635834",
-        company:"SAL Info Tech"
-    })
+      let UserId = "";
+      let token;
+      if (typeof localStorage != undefined) {
+        UserId = localStorage.getItem("UserId");
+        token = localStorage.getItem("token");
+      }
+
+    const getUserData = async () => {
+      //  messageAlert("loading", "Geting Client Data...");
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      const data_obj = {
+        userId: UserId,
+      };
+      await axios
+        .get(`${ApiEndPoint}users/`, { params: data_obj })
+        .then((response) => {
+          console.log("response 7h", response);
+          if (response.status == 200) {
+            setUserData(response.data.data);
+
+            //    messageAlert("success", "Succesfully Get all client data");
+          } else if (response.status == 201) {
+            alert("User Not Found");
+          }
+        })
+        .catch((error) => {
+          alert("error " + error);
+          console.log(error, "error");
+        });
+    };
+    useEffect(() => {
+      getUserData();
+    }, []);
+
 
     const[EditData,setEditData]=useState([
         {
             id:1,
             name:"name",
-            value:UpdateValue.name,
+            value:userData.name,
             inputStatus:true
-
 
         },
         {
             id:2,
             name:"email",
-            value:UpdateValue.email,
+            value:userData.email,
             inputStatus:true
         },
         {
             id:3,
             name:"password",
-            value:UpdateValue.password,
+            value:userData.password,
             inputStatus:true
         },
         {
             id:4,
             name:"phone",
-            value:UpdateValue.phone,
+            value:userData.phoneNo,
             inputStatus:true
             
 
@@ -47,123 +80,138 @@ const Profile = () => {
         {
             id:5,
             name:"company",
-            value:UpdateValue.company,
+            value:userData.companyName,
             inputStatus:true
         }
     ])
 
-    function changeValueObj(name,value){
-        let newData=[]
-        EditData.map((item)=>{
-            if(item.name == name){
-                newData.push(
-                    {
-                        id:item.id,
-                        name:item.name,
-                        value:item.value,
-                        inputStatus:value
-                    }
-                )
-              
-            }else{
-                newData.push(item)
-            }
-        
-          
-        })
-setEditData(newData)
-    }
-    
-    const EditInputHandler=(name)=>{
-changeValueObj(name,false)
-    }
+const showModal = () => {
+  setIsModalOpen(true);
+};
 
+     const getFirstLetters = (name) => {
+       const words = name?.split(" ")||[]; // Split the input string into words
+       let result = "";
 
-    const CancelHandler=(name)=>{
-        changeValueObj(name,true)
+       for (const word of words) {
+         if (word.length > 0) {
+           result += word.charAt(0).toUpperCase();
+         }
+       }
 
-    }
-    const UpdateHandler=(name)=>{
-changeValueObj(name,true)
-    }
-    const OnchageInput=(e)=>{
-        const {name,value}=e.target
-   
-        setUpdatevalue({
-            ...UpdateValue,
-            [name]:value
-        })
-
-
-    }
+       return result || "N/A"; // Return 'N/A' if no first letters are available
+     };
+     console.log(userData, "userData");
   return (
-   <>
-   <div className={css.ProfileCon}>
-    <div className={css.profileCamera}>
-        <div className={css.imageUplode}>
-            <div className={css.avtarBox}  style={{textTransform:"uppercase"}}>{
-session.user.name.split(" ")[0][0]+session.user.name.split(" ")[1][0]
-            }
-            
+    <>
+      <div className={css.ProfileCon}>
+        <div className={css.profileCamera}>
+          <div className={css.imageUplode}>
+            <div
+              className={css.avtarBox}
+              style={{ textTransform: "uppercase" }}
+            >
+              {getFirstLetters(userData.name)}
             </div>
-           
-           <div className={css.emailName} >
-            <h4 style={{textTransform:"capitalize"}}>{session.user.name}</h4>
-            <p>{session.user.email}</p>
-        </div>
-        </div>
-       
-        <div className={css.logout}>
-    <button>Logout <IoLogOutOutline/></button>
-        </div>
-    </div>
 
-    <div className={css.Editsection}>
-      <div className={css.EditHeading}>
-        <h2>Profile Details</h2>
-        <div className={css.lineheading}>
+            <div className={css.emailName}>
+              <h4 style={{ textTransform: "capitalize" }}>{userData.name}</h4>
+              <p>{userData.email}</p>
+            </div>
+          </div>
 
+          <div className={css.logout}>
+            <button>
+              Logout <IoLogOutOutline />
+            </button>
+          </div>
         </div>
-        <div className={css.logout}>
-    <button>Logout <IoLogOutOutline/></button>
-        </div>
-        <div className={css.EditBox}>
 
-
-            {
-                EditData.map((item)=>{
-                    return(
-                        <div className={css.EditRow} key={item.id}>
-                            <div className={`${css.inputlabel} d-flex  flex-column flex-sm-row`}>
-                            <label>{item.name}</label>
-                            <input type='text' value={UpdateValue[item.name]} onChange={OnchageInput} name={item.name} disabled={item.inputStatus} />
-                                </div>
-                      
-                        <div className={css.EditButton}>
-                          
-                           {
-                            item.inputStatus? <BiEdit className={css.Editicon} onClick={()=>EditInputHandler(item.name)}/>:(
-                                <div className={css.UpdateBtn}>
-                                <IoClose onClick={()=>CancelHandler(item.name)} className={css.CancelIcon}/>
-                                <HiCheck  onClick={()=>UpdateHandler(item.name)} className={css.Updateicon}/>
-                            </div>
-                            )
-                           } 
-                        </div>
-                    </div>
-                    )
-                })
-
-            }
-       
-         
+        <div className={css.Editsection}>
+          <div className={`${css.EditHeading}`}>
+            <div className="flex items-center justify-between">
+              <div className="">
+                <h2>Profile Details</h2>
+                <div className={css.lineheading}></div>
+              </div>
+              <BiEdit className={css.Editicon} onClick={showModal} />
+            </div>
+            <div className={css.logout}>
+              <button>
+                Logout <IoLogOutOutline />
+              </button>
+            </div>
+            <div className={css.EditBox}>
+              <div className={css.EditRow}>
+                <div
+                  className={`${css.inputlabel} flex items-center gap-4 w-full `}
+                >
+                  <label className="w-[30%]">Name</label>
+                  <span className="text-[1.6rem] font-medium w-[70%]">
+                    {userData.name}
+                  </span>
+                </div>
+              </div>
+              <div className={css.EditRow}>
+                <div
+                  className={`${css.inputlabel} flex items-center gap-4 w-full`}
+                >
+                  <label className="w-[30%]">Email</label>
+                  <span className="text-[1.6rem] font-medium w-[70%]">
+                    {userData.email}
+                  </span>
+                </div>
+              </div>
+              <div className={css.EditRow}>
+                <div
+                  className={`${css.inputlabel} flex items-center gap-4 w-full`}
+                >
+                  <label className="w-[30%]">Phone No</label>
+                  <span className="text-[1.6rem] font-medium w-[70%]">
+                    {userData.phoneNo}
+                  </span>
+                </div>
+              </div>
+              <div className={css.EditRow}>
+                <div
+                  className={`${css.inputlabel} flex items-center gap-7 w-full`}
+                >
+                  <label className="w-[30%]">Company</label>
+                  <span className="text-[1.6rem] font-medium w-[70%]">
+                    {userData.companyName}
+                  </span>
+                </div>
+              </div>
+              <div className={css.EditRow}>
+                <div
+                  className={`${css.inputlabel} flex items-center gap-7 w-full`}
+                >
+                  <label className="w-[30%]">Passowrd</label>
+                  <span className="text-[1.6rem] font-medium w-[70%]">
+                    {/* {userData.name} */}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-   
-   </div>
-   </>
-  )
+      <Modal
+        title={null}
+        open={isModalOpen}
+        onOk={null}
+        // onCancel={handleCancel}
+      >
+        <div className="px-4 py-5">
+          <UserForm
+            getUserData={getUserData}
+            setIsModalOpen={setIsModalOpen}
+            userData={userData}
+          />
+        </div>
+      </Modal>
+    </>
+  );
 }
 
 export default Profile

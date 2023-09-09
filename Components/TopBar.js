@@ -46,11 +46,9 @@ useEffect(()=>{
 },[])
 
 const Logouthandler =async()=>{
-    var data={
-username:localStorage.getItem('username'),
-    }
-    signOut()
 
+router.push("/login")
+    signOut()
 }
 const dropDown_show=()=>{
     setUserdrop(!userdrop); 
@@ -105,13 +103,13 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
                       </Link>
                     </li>
                     <li>
-                      <Link href="">
+                      <Link href="#">
                         <BiHelpCircle className={styles.icons_drop} />
                         Help
                       </Link>
                     </li>
                     <li>
-                      <Link href="" onClick={() => Logouthandler()}>
+                      <Link href="#" onClick={() => Logouthandler()}>
                         <BiLogOut className={styles.icons_drop} />
                         Logout
                       </Link>
@@ -164,13 +162,13 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
                       </Link>
                     </li>
                     <li>
-                      <Link href="">
+                      <Link href="#">
                         <BiHelpCircle className={styles.icons_drop} />
                         Help
                       </Link>
                     </li>
                     <li>
-                      <Link href="" onClick={() => Logouthandler()}>
+                      <Link href="#" onClick={() => Logouthandler()}>
                         <BiLogOut className={styles.icons_drop} />
                         Logout
                       </Link>

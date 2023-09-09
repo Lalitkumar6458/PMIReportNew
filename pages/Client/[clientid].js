@@ -12,16 +12,18 @@ import { MdDelete } from "react-icons/md";
 import { ApiEndPoint } from '@/public/ApiEndPoint';
 const ClientInfo = () => {
   const { data: session } = useSession()
-
+    let UserId = "";
+    let token;
+    if (typeof localStorage != undefined) {
+      UserId = localStorage.getItem("UserId");
+      token = localStorage.getItem("token");
+    }
   const [messageApi, contextHolder] = message.useMessage()
 
 const router=useRouter()
 const{query}=router
 const { TextArea } = Input;
 const[clientData,setClientData]=useState(JSON.parse(localStorage.getItem("ClientData")))
-
-
-
 
 
 let newData = [JSON.parse(localStorage.getItem("ClientData"))]
@@ -48,16 +50,15 @@ const UpdateBtnhandler=async()=>{
   try {
    
 const obj = {
-  id:clientUpdate.key,
-client_name: clientUpdate.client_name,
-client_address: clientUpdate.client_address,
-client_phone_no: clientUpdate.client_phone_no,
-client_email: clientUpdate.client_email,
-user_info_id: clientUpdate.user_info_id,
-email: session.user.email,
+  id: clientUpdate._id,
+  name: clientUpdate.name,
+  address: clientUpdate.address,
+  phoneNo: clientUpdate.phoneNo,
+  email: clientUpdate.email,
+  userId: clientUpdate.userId,
 };
     await axios
-      .post(`${ApiEndPoint}update_client_info/`, obj)
+      .put(`${ApiEndPoint}client/`, obj)
       .then((response) => {
          messageAlert('success','Succesfully Updated Client')
           
@@ -72,8 +73,33 @@ email: session.user.email,
     console.log('Validate Failed:', errInfo);
   }
 }
-const DeleteClient=()=>{
+const DeleteClient=async()=>{
+ messageAlert("loading", "Deleting Grade...");
+ 
 
+       const response = await fetch(`${ApiEndPoint}client/`, {
+         method: "DELETE",
+         headers: {
+           "Content-Type": "application/json",
+           Connection: "Keep-Alive",
+           Authorization: `Bearer ${token}`,
+         },
+         body: JSON.stringify({
+           id: clientUpdate._id,
+           userId: clientUpdate.userId,
+         }),
+       });
+       const data = await response.json();
+       console.log("data", data);
+       if (response.ok) {
+         console.log("Data saved to database");
+           messageAlert("success", "Succesfully Deleted Grade");
+       router.push("/Category");
+       } else {
+        messageAlert("error", "Error deleting...");
+
+         console.error("Error saving data to database");
+       }
 }
   return (
     <Layout title="client">
@@ -89,8 +115,8 @@ const DeleteClient=()=>{
           <h4>Client Info</h4>
           <div className="">
             <Popconfirm
-              title="Delete the Item"
-              description="Are you sure to delete this item?"
+              title={`Delete the ${clientUpdate.name}`}
+              description="Are you sure to delete this client?"
               onConfirm={() => DeleteClient()}
             >
               <MdDelete className={styles.icon_delete} />
@@ -102,8 +128,8 @@ const DeleteClient=()=>{
           <div className={styles.input_client}>
             <label>Name</label>
             <Input
-              value={clientUpdate.client_name}
-              name="client_name"
+              value={clientUpdate.name}
+              name="name"
               placeholder="Basic usage"
               onChange={UpdateClientHandler}
             />
@@ -111,16 +137,16 @@ const DeleteClient=()=>{
           <div className={styles.input_client}>
             <label>Email</label>
             <Input
-              value={clientUpdate.client_email}
-              name="client_email"
+              value={clientUpdate.email}
+              name="email"
               onChange={UpdateClientHandler}
             />
           </div>
           <div className={styles.input_client}>
             <label>Phone No.</label>
             <Input
-              value={clientUpdate.client_phone_no}
-              name="client_phone_no"
+              value={clientUpdate.phoneNo}
+              name="phoneNo"
               onChange={UpdateClientHandler}
             />
           </div>
@@ -129,8 +155,8 @@ const DeleteClient=()=>{
             <TextArea
               className={styles.text_client}
               showCount
-              name="client_address"
-              value={clientUpdate.client_address}
+              name="address"
+              value={clientUpdate.address}
               maxLength={100}
               onChange={UpdateClientHandler}
             />

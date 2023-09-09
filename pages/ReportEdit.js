@@ -171,7 +171,7 @@ Router.push("/Report")
                 {Object.keys(ChemicalDetails).map((key, i) => {
                   return (
                     <tr key={i}>
-                      <td style={{textTransform:"capitalize"}}>{key}</td>
+                      <td style={{ textTransform: "capitalize" }}>{key}</td>
                       <td>
                         {" "}
                         <Input
@@ -182,7 +182,7 @@ Router.push("/Report")
                           className={css.Input_field}
                         />
                       </td>
-                      <td>{getData.gradeDataC[key] || "-"}</td>
+                      <td>{getData.chemicalRange[i].percent || "-"}</td>
                     </tr>
                   );
                 })}
