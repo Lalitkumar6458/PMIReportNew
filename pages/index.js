@@ -60,6 +60,7 @@ const getUserLogin=async()=>{
       if (response.status == 200) {
         // setClientData(response.data.data);
         localStorage.setItem("UserId", response.data.data.id);
+        localStorage.setItem('token', response.data.token)
         // messageAlert("success", "Succesfully Get all client data");
       } else if (response.status == 201) {
         // setClientData(response.data.data);
