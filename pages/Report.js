@@ -50,7 +50,6 @@ const Report = ({ reportData,session }) => {
   const [tableview, setTableview] = useState(false);
   const[getAllData,setGetAllData]=useState({})
   const [SelecteGradeData, setSelecteGradeData] = useState({});
-
   const [AgencyUser, setAgencyUser] = useState('');
 
     const [form] = Form.useForm();
@@ -61,7 +60,41 @@ const Report = ({ reportData,session }) => {
          token = localStorage.getItem("token");
        }
   const onFinish = (values) => {
-    console.log(values,"report forms")
+     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    const reportAddedData = JSON.parse(localStorage.getItem("reportAddedData"));
+    console.log(values, "report forms", reportAddedData,values.date.format("DD-MM-YYYY"));
+const data = {
+  ...values,
+  userId: UserId,
+  date: new Date(values.date.format("YYYY-MM-DD")),
+  poDate: new Date(values.poDate.format("YYYY-MM-DD")),
+  reportaddedData: reportAddedData,
+  chemical: SelecteGradeData?.chemical,
+};
+console.log("data", data);
+   axios
+     .post(ApiEndPoint + "report", data)
+     .then((response) => {
+       // Handle the response from the backend
+       console.log("response",response);
+       if (response.status == 200) {
+         //  getAllChemicalData();
+         //  setIsModalOpen(false);
+         const Data=response.data.data
+         console.log(data,"resposr data")
+         var url = "/ReportPdf";
+         Router.push(
+           { pathname: url, query: { data: JSON.stringify(Data) } },
+           url
+         );
+         //  Router.push("/ReportPdf")
+       }
+     })
+     .catch((error) => {
+       console.log("error", error);
+       // Handle any errors or unauthorized access
+     });
+
   }
   const [items2, setItems2] = useState(reportData?.instrument_id?reportData?.instrument_id?.map((item,index)=>{
     return{
@@ -341,6 +374,7 @@ key:index,
         console.log("response 7h", response);
         if (response.status == 200) {
           setGetAllData(response.data.data);
+         
           // messageAlert("success", "Succesfully Get all client data");
         } else if (response.status == 201) {
           setGetAllData(response.data.data);
@@ -376,7 +410,9 @@ key:index,
 
   },[])
   useEffect(() => {
-setAgencyUser(getAllData?.UserData?.name);
+ form.setFieldsValue({
+   agencyName: getAllData?.UserData?.name,
+ });
 console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
   }, [getAllData]);
   const commonOnChangeFun=(value,setvalue,name)=>{
@@ -421,7 +457,7 @@ setvalue(value)
                     Client Name
                   </span>
                   <Form.Item
-                    name="clientName"
+                    name="clientId"
                     rules={[
                       {
                         required: true,
@@ -443,7 +479,7 @@ setvalue(value)
                       options={getAllData?.ClientData?.map((item) => {
                         return {
                           label: item.name,
-                          value: item.name,
+                          value: item._id,
                         };
                       })}
                     />
@@ -611,7 +647,11 @@ setvalue(value)
                       },
                     ]}
                   >
-                    <DatePicker className="w-full" size="large" />
+                    <DatePicker
+                      className="w-full"
+                      format={"DD-MM-YYYY"}
+                      size="large"
+                    />
                   </Form.Item>
                 </div>
                 <div className="">
@@ -670,7 +710,7 @@ setvalue(value)
                       <label>Specified Goods</label>
                       <div className="w-full">
                         <Form.Item
-                          name="Grade"
+                          name="grade"
                           rules={[
                             {
                               required: true,
@@ -823,6 +863,7 @@ setvalue(value)
             </div>
           </Form.Item>
         </Form>
+
         <Drawer
           placement={placement}
           closable={false}
@@ -890,14 +931,8 @@ export default Report;
 
 export async function getServerSideProps({ req }){
   const session = await getSession({ req })
-
-
 try{
-  let data = {
-     email: session.user.email,
-   };
-
-   const res = await axios.get(`${ApiEndPoint}report_info_party_name/`, { params: data });
+  
  if(!session){
     return {
       redirect : {
@@ -908,7 +943,7 @@ try{
   }
 
   return {
-    props: { session,reportData: res.data },
+    props: { session },
   };
 }catch(e){
   console.error("Error in date fetching",e)

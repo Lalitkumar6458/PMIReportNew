@@ -38,6 +38,9 @@ body{
 .ant-form-item{
   margin-bottom: 10px !important;
 }
+.updateReportInfo .ant-form-item{
+  margin-bottom: 0px !important;
+}
 .formClass .ant-form-item{
   margin-bottom: 0px !important;
 }

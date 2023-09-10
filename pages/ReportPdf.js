@@ -17,16 +17,24 @@ import {
 } from 'next-share'
 import { getSession, useSession, signOut } from "next-auth/react"
 import { ApiEndPoint } from '@/public/ApiEndPoint';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 const ReportPdf = () => {
-
+  const router = useRouter();
+  const { query } = router;
+  var getData = JSON.parse(query.data);
+  console.log("getData", getData._doc);
+  if(localStorage != undefined){
+    localStorage.setItem("ReportCreatedData", JSON.stringify(getData._doc));
+  }
   const session = useSession()
 const [imagename, setImagename] = useState(formate1);
  const [isModalOpen, setIsModalOpen] = useState(false);
  var currentDate = new Date();
  var formattedDate = currentDate.toISOString().slice(0, 10);
  const reportSetData=JSON.parse(localStorage.getItem('CreatedData'))
- const dateNew=reportSetData.date== ''?formattedDate.replaceAll("-","_"):reportSetData.date.replaceAll("-","_")
- const[filename,setFileName]=useState(reportSetData.partyname.replaceAll(" ","_")+"_"+reportSetData.Gradename+"_"+dateNew )
+//  const dateNew=reportSetData.date== ''?formattedDate.replaceAll("-","_"):reportSetData.date.replaceAll("-","_")
+//  const[filename,setFileName]=useState(reportSetData.partyname.replaceAll(" ","_")+"_"+reportSetData.Gradename+"_"+dateNew )
 const[withLatter,setWithLatterPad]=useState(false)
 const[pdfurl,setPdfUrl]=useState('')
  const handleOk = () => {
@@ -41,8 +49,8 @@ const[pdfurl,setPdfUrl]=useState('')
 };
          var data=JSON.parse(localStorage.getItem("ReportAllDAta"))
 
-        var date=data.date.split("T")[0].replaceAll("-","_")||formattedDate
-        var gradeName=data.Gradename
+        // var date=data.date.split("T")[0].replaceAll("-","_")||formattedDate
+        // var gradeName=data.Gradename
         const[formateNo,setFormateNo]=useState(1)
         const [email, setEmail] = useState('');
         const [whatsapp, setwhatsapp] = useState('');
@@ -167,7 +175,6 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
                     <input
                       type="text"
                       className="w-100"
-                      value={filename}
                       onChange={(e) => setFileName(e.target.value)}
                       placeholder="Enter File Name..."
                     />
@@ -267,7 +274,7 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
               <PDFDownloadLink
                 className="btnBox"
                 document={<MyDocument formateNo={formateNo} />}
-                fileName={filename}
+                // fileName={filename}
               >
                 {({ blob, url, loading, error }) =>
                   loading ? (

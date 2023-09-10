@@ -67,8 +67,6 @@ const UpdateGradepro=()=>{
 
     localStorage.setItem("reportAddedData",JSON.stringify([...olData,newData]))
 
-    
-
 }
 
 const DeleteReportRow=(key)=>{

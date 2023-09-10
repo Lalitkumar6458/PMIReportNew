@@ -6,15 +6,20 @@ import {
   
     Input,
     Button,
+    Modal,
+    Form,
    
   } from "antd";
   import RandomGradeData from '../SmallComponets/RandomGradeData';
 const Reportmobilelist = ({ gradeDataC, Gradename, chemicalRange }) => {
   const { TextArea } = Input;
+    const [form] = Form.useForm();
+const [modal2Open, setModal2Open] = useState(false);
 
   const [tableview, setTableview] = useState(false);
-  var getOldData = JSON.parse(localStorage.getItem("reportAddedData")) || [];
+  let getOldData = JSON.parse(localStorage.getItem("reportAddedData")) || [];
   const [addedData, setAddedData] = useState([...getOldData]);
+  const[selectedRowData,setSelectedRowData]=useState({})
   const Data = [
     {
       id: 1,
@@ -42,20 +47,26 @@ const Reportmobilelist = ({ gradeDataC, Gradename, chemicalRange }) => {
   });
 
   const report_grade_edit = (data) => {
+
     var obj = {
-      gradeDataC: gradeDataC?.chemical,
       data,
       chemicalRange,
     };
+    setSelectedRowData(obj);
+    console.log(" gradeDataC?.chemical", selectedRowData);
     // Router.push("/ReportEdit")
     var url = "/ReportEdit";
-    Router.push(
-      {
-        pathname: url,
-        query: { data: JSON.stringify(obj) },
-      },
-      url
-    );
+    form.setFieldsValue({
+      ...data,
+    });
+setModal2Open(true)
+    // Router.push(
+    //   {
+    //     pathname: url,
+    //     query: { data: JSON.stringify(obj) },
+    //   },
+    //   url
+    // );
   };
 
   const onSizeQtyHandler = (e) => {
@@ -91,7 +102,35 @@ const Reportmobilelist = ({ gradeDataC, Gradename, chemicalRange }) => {
     );
     setCountAdd(countadd + 1);
   };
+const onFinish =async(value)=>{
+console.log(
+  value,
+  "values form",
+  JSON.parse(localStorage.getItem("reportAddedData"))
+);
+const dataKey = selectedRowData.data.key
+  var olData = JSON.parse(localStorage.getItem("reportAddedData")).filter(
+    (x) => x.key !== dataKey
+  );
+  var newData = {
+    ...value,
+    key: dataKey,
+  };
 
+  localStorage.setItem("reportAddedData", JSON.stringify([...olData, newData]));
+setModal2Open(false);
+
+  setAddedData(JSON.parse(localStorage.getItem("reportAddedData")))
+}
+const DeleteReportData=()=>{
+  const dataKey = selectedRowData.data.key;
+   var olData = JSON.parse(localStorage.getItem("reportAddedData")).filter(
+     (x) => x.key !== dataKey
+   );
+   localStorage.setItem("reportAddedData", JSON.stringify([...olData]));
+   setModal2Open(false);
+   setAddedData(JSON.parse(localStorage.getItem("reportAddedData")));
+}
   return (
     <>
       <div className={css.report_sizeqty}>
@@ -176,6 +215,162 @@ const Reportmobilelist = ({ gradeDataC, Gradename, chemicalRange }) => {
           </div>
         </div>
       </div>
+      <Modal
+        centered
+        open={modal2Open}
+        onOk={() => setModal2Open(false)}
+        onCancel={() => setModal2Open(false)}
+      >
+        <div className="p-4">
+          <Form
+            className=""
+            form={form}
+            name="control-hooks"
+            onFinish={onFinish}
+          >
+            <div className="grid grid-cols-3 gap-2">
+              <div className="">
+                <span className="text-[1.5rem] font-inter font-medium">
+                  Sr No.
+                </span>
+                <Form.Item
+                  name="srno"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter SrNo" size="large" />
+                </Form.Item>
+              </div>
+              <div className="">
+                <span className="text-[1.5rem] font-inter font-medium">
+                  Quantity
+                </span>
+                <Form.Item
+                  name="qty"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter Quantity" size="large" />
+                </Form.Item>
+              </div>
+              <div className="">
+                <span className="text-[1.5rem] font-inter font-medium">
+                  Heat/Lot NO.
+                </span>
+                <Form.Item
+                  name="heatno"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input placeholder="Enter HeatNo" size="large" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="">
+              <span className="text-[1.5rem] font-inter font-medium">
+                Size(Description)
+              </span>
+              <Form.Item
+                name="size"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <TextArea placeholder="Enter HeatNo" size="large" />
+              </Form.Item>
+            </div>
+
+            <div className="updateReportInfo">
+              <table className="w-full ">
+                <thead className=" bg-mainDark text-white h-[50px] md:h-[40px]">
+                  <tr>
+                    <th className="pl-3">Alloy Element</th>
+                    <th>Actual observations</th>
+                    <th>Specification range</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chemicalRange?.map((item, index) => {
+                    return (
+                      <tr
+                        key={index}
+                        className="bg-[#8a9bd68c] text-[#081A51] text-[16px] font-inter font-semibold"
+                      >
+                        <td className="py-2 pl-3 border-b">{item.Element}</td>
+                        <td className="py-2 border-b">
+                          <Form.Item
+                            name={item.Element}
+                            rules={[
+                              {
+                                required: true,
+                              },
+                            ]}
+                          >
+                            <Input className="w-[100px]" />
+                          </Form.Item>
+                        </td>
+                        <td className="py-2 font-inter text-[15px] border-b text-mainDark">
+                          {item.percent}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="">
+              <span className="text-[1.5rem] font-inter font-medium">
+                Remark
+              </span>
+              <Form.Item
+                name="remark"
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input placeholder="Enter HeatNo" size="large" />
+              </Form.Item>
+            </div>
+            <Form.Item>
+              <div className="flex items-center justify-center gap-3 mt-4">
+                <button
+                onClick={DeleteReportData}
+                  className="bg-red-800 text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
+                  type="button"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => setModal2Open(false)}
+                  type="button"
+                  className="rounded h-[40px] px-3 font-poppins text-[1.4rem] border border-mainDark"
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-mainDark text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
+                  type="sumbit"
+                >
+                  Update
+                </button>
+              </div>
+            </Form.Item>
+          </Form>
+        </div>
+      </Modal>
     </>
   );
 };
