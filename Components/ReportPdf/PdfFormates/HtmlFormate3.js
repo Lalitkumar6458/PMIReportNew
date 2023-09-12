@@ -4,8 +4,9 @@ import LatterpadSection from './LatterpadSection'
 
 const HtmlFormate3 = ({ReportData,CreatedData,latterPad}) => {
   const LaterPad_Id=localStorage.getItem('FormateNO')
+  const ReportCreatedData=JSON.parse(localStorage.getItem("ReportCreatedData"))
 
-const Data =ReportData.map((item)=>{
+const Data =ReportCreatedData['reportaddedData'].map((item)=>{
   const obj={
 
   }
@@ -461,47 +462,47 @@ function getHtml(indexId){
     <div class="Col_6 heigh_box borderRigth">
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">PMI REPORT NO:</div>
-        <div class="textInfo">${CreatedData.reportNo} </div>
+        <div class="textInfo">${ReportCreatedData.pmiReportNo} </div>
       </div>
 
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Date:</div>
-        <div class="textInfo"> ${CreatedData.date}</div>
+        <div class="textInfo"> ${ReportCreatedData.date.split("T")[0]}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">P.O NO:</div>
-        <div class="textInfo">${CreatedData.poNo}</div>
+        <div class="textInfo">${ReportCreatedData.poNo}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">PO Date:</div>
-        <div class="textInfo"></div>
+        <div class="textInfo">${ReportCreatedData.poDate.split("T")[0]}</div>
       </div>
       <div class="rowBox">
         <div class= "textInfo borderRigth">Lot NO.:</div>
-        <div class="textInfo"></div>
+        <div class="textInfo">${ReportCreatedData.lotNo}</div>
       </div>
     </div>
     <div class="Col_6 heigh_box ">
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Client:</div>
-        <div class="textInfo">${CreatedData.partyname}</div>
+        <div class="textInfo">${ReportCreatedData.clientId}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Vendor:</div>
-        <div class="textInfo"></div>
+        <div class="textInfo">${ReportCreatedData.vendor}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Bluk Item Types(As Per reqstn):</div>
-        <div class="textInfo"></div>
+        <div class="textInfo">${ReportCreatedData.blukItemType}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">SPECIFIED GRADE:</div>
-        <div class="textInfo">${CreatedData.Gradename}</div>
+        <div class="textInfo">${ReportCreatedData.grade}</div>
       </div>
 
       <div class="rowBox ">
         <div class= "textInfo borderRigth">PMI Location:</div>
-        <div class="textInfo">${CreatedData.locationName}</div>
+        <div class="textInfo">${ReportCreatedData.location}</div>
       </div>
 
 
@@ -514,13 +515,13 @@ ${reporttable(indexId)}
     <div class="leftDiv">
     <div class="TopDiv">
     <div class="InstrmentId borderRigth">
-    <div class="InstrId borderBottom" >Instrument Type/Id:  ${CreatedData.instrumentValue}</div>
-    <div  class="InstrId borderBottom" >Models No.: ${CreatedData.modalNovalue}<</div>
+    <div class="InstrId borderBottom" >Instrument Type/Id:  ${ReportCreatedData.InstrumentId}</div>
+    <div  class="InstrId borderBottom" >Models No.: ${ReportCreatedData.ModalNo}<</div>
     <div  class="InstrId">SR No.:</div>
     </div>
     <div class="modalNo">
       <div class="withness_box borderBottom" >WITNESSED BY:</div>
-      <div class="withness_box"  >INSPECTION AGENCY:${CreatedData.agencyName}</div>
+      <div class="withness_box"  >INSPECTION AGENCY:${ReportCreatedData.agencyName}</div>
     </div>
     </div>
     <div class="BottomDiv">

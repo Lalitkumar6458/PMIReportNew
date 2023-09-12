@@ -6,6 +6,7 @@ import img from "../../../public/Images/pmilogo.png"
 import ReportlatterPad from './ReportlatterPad';
 import {PDFViewer,BlobProvider , PDFDownloadLink } from '@react-pdf/renderer';
 import Link from 'next/link';
+import LatterPadForm from '@/Components/FormCon/LatterPadForm';
 
 const LaterrPadCon3 = () => {
     let formId = 2
@@ -174,41 +175,11 @@ const LaterrPadCon3 = () => {
           </div>
         </div>
 
-        <div className={css.SetInputField}>
-          <input
-            type="text"
-            value={inputValue.text}
-            name={inputValue.name}
-            onChange={setTextChange}
-          />
-          <button onClick={() => SaveLaterPadData()}>Save</button>
-        </div>
+        <div className="mt-3">
+<LatterPadForm  setTextChange={setTextChange} intialvalues={intialvalues}/>
+</div>
 
-        <BlobProvider
-          document={<ReportlatterPad />}
-          style={styles.viewer}
-          filename="example.pdf"
-        >
-          {({ url, loading, error }) =>
-            loading ? (
-              "Loading document..."
-            ) : error ? (
-              "Error loading document :("
-            ) : (
-              <>
-                {/* <iframe src={url} title="Example PDF" filename="exmple.pdf" width="100%" height="500px"></iframe> */}
-
-                <Link
-                  href={url != undefined ? url : ""}
-                  className="btnBox mx-3"
-                  target="_blank"
-                >
-                  View PDF
-                </Link>
-              </>
-            )
-          }
-        </BlobProvider>
+  
       </div>
     );
 }

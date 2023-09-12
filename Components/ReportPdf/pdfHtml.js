@@ -2,12 +2,15 @@ import React from 'react'
 import LatterPadForm1 from '../Settings/latterPad/LatterPadForm1'
 import LatterPadForm2 from '../Settings/latterPad/LatterPadForm2'
 import LatterpadSection from './PdfFormates/LatterpadSection'
-const pdfHtml = ({ReportData,CreatedData,latterPad}) => {
+const pdfHtml = ({latterPad}) => {
  const LaterPad_Id=localStorage.getItem('FormateNO')
   const ReportAllData=JSON.parse(localStorage.getItem("ReportAllDAta"))
+  const ReportCreatedData=JSON.parse(localStorage.getItem("ReportCreatedData"))
+
   const LaterPadData=JSON.parse(localStorage.getItem('LatterPadData'))||{}
   const Img=localStorage.getItem('base64Img')
-const Data =ReportData.map((item)=>{
+  console.log('GetSavePdfData',ReportCreatedData)
+const Data =ReportCreatedData['reportaddedData'].map((item)=>{
   const obj={
 
   }
@@ -94,7 +97,7 @@ tableList= `<div class="Sizetable">
 return tableList
 
 }
-const Gradedata=ReportAllData?.gradeDataC
+const Gradedata=ReportCreatedData?.chemical
 const AlloyContent=(obj)=>{
 
   
@@ -104,8 +107,8 @@ return `
   <thead>
     <tr>
     ${
-      Object.keys(obj).map((item)=>{
-        return` <th>${item}</th>`
+      obj.map((item)=>{
+        return` <th>${item.Element}</th>`
       }).join("")
     }
     </tr>
@@ -113,8 +116,8 @@ return `
   <tbody>
       <tr>
       ${
-        Object.keys(obj).map((item)=>{
-          return` <td>${obj[item]}</td>`
+        obj.map((item)=>{
+          return` <td>${item.percent}</td>`
         }).join("")
       }
     </tr>
@@ -381,17 +384,17 @@ function getHtml(indexId){
    </div>
    <div class="MainInfo">
     <div class="Col_3 heigh_box borderRigth">
-    <div class="textfont">PMI REPORT NO:${CreatedData.reportNo} </div>
-    <div class="textfont">Purchase Order:${CreatedData.poNo} </div>
-<div class="textfont">Material Specification/Grade:${CreatedData.Gradename}</div>
+    <div class="textfont">PMI REPORT NO:${ReportCreatedData.pmiReportNo} </div>
+    <div class="textfont">Purchase Order:${ReportCreatedData.poNo} </div>
+<div class="textfont">Material Specification/Grade:${ReportCreatedData.grade}</div>
     </div>
     <div class="Col_6 heigh_box borderRigth">
-<div class="textfont">Party Name: ${CreatedData.partyname}</div>
-<div class="textfont">Testing Agency :${CreatedData.agencyName}</div>
-<div class="textfont">PMI Location: ${CreatedData.locationName}</div>
+<div class="textfont">Party Name: ${ReportCreatedData.clientId}</div>
+<div class="textfont">Testing Agency :${ReportCreatedData.agencyName}</div>
+<div class="textfont">PMI Location: ${ReportCreatedData.location}</div>
     </div>
     <div class="Col_3 heigh_box LastCol  ">
-     <div class="textfont">DATE: ${CreatedData.date}</div>
+     <div class="textfont">DATE: ${ReportCreatedData.date}</div>
      <div class="textfont">Page No.: ${indexId+1}</div>
     </div> 
    <div class="Col_3 heigh_box_2 borderRigth borderTop pd_0">
@@ -399,7 +402,7 @@ function getHtml(indexId){
 Element
     </div>
     <div class="GradeBox">
-Specified Goods: ${CreatedData.Gradename}
+Specified Goods: ${ReportCreatedData.grade}
     </div>
     </div>
     <div class="Col_6 heigh_box_2 borderRigth borderTop pd_0">
@@ -423,8 +426,8 @@ ${reporttable(indexId)}
 <div class="leftDiv">
 <div class="TopDiv">
 <div class="InstrmentId borderRigth">
-<div >Instrument Id: ${CreatedData.instrumentValue}</div>
-<div >Models No.: ${CreatedData.modalNovalue}</div>
+<div >Instrument Id: ${ReportCreatedData.InstrumentId}</div>
+<div >Models No.: ${ReportCreatedData.ModalNo}</div>
 
 </div>
 <div class="modalNo">

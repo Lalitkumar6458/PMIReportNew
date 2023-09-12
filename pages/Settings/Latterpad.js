@@ -11,7 +11,7 @@ const Latterpad = () => {
     <Layout title="Latterpad">
 {/* <LaterrPadCon formId={router.query.formId}/> */}
 {
-        router.query.formId == 3 ? <LaterrPadCon3/>:<LaterrPadCon/>
+        router.query.formId == 3 ? <LaterrPadCon3 formId={router.query.formId}/>: <LaterrPadCon formId={router.query.formId }/>
 }
 
     </Layout>

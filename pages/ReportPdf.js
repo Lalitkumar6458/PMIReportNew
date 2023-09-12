@@ -22,10 +22,10 @@ import { useRouter } from 'next/router';
 const ReportPdf = () => {
   const router = useRouter();
   const { query } = router;
-  var getData = JSON.parse(query.data);
-  console.log("getData", getData._doc);
+  // var getData = JSON.parse(query.data)||{};
+  // console.log("getData", getData._doc);
   if(localStorage != undefined){
-    localStorage.setItem("ReportCreatedData", JSON.stringify(getData._doc));
+    // localStorage.setItem("ReportCreatedData", JSON.stringify(getData._doc));
   }
   const session = useSession()
 const [imagename, setImagename] = useState(formate1);
@@ -257,15 +257,15 @@ const pdfUrl = "data:application/pdf;base64,JVBERi0xLjMKJf////8KOSAwIG9iago8PAov
                     "Error loading document :("
                   ) : (
                     <>
-                      <Link
+                      <a
                         href={url != undefined ? url : ""}
                         className="btnBox mx-3"
                         target="_blank"
                       >
                         View PDF
                         <EyeOutlined />{" "}
-                      </Link>
-                      <input type="hidden" value={url} id="pdfUrl" />
+                      </a>
+                      // <input type="hidden" value={url} id="pdfUrl" />
                     </>
                   )
                 }

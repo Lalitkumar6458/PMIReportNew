@@ -12,8 +12,9 @@ const MyDocument = ({formateNo,latterPad}) => {
 
 const ReportDataTable=JSON.parse(localStorage.getItem("reportAddedData"))
 const CreatedData=JSON.parse(localStorage.getItem("CreatedData"))
+const GetSavePdfData=JSON.parse(localStorage.getItem("ReportCreatedData"))
 
-let htmlStr=pdfHtml({'ReportData':ReportDataTable,'CreatedData':CreatedData,'latterPad':latterPad})
+let htmlStr=pdfHtml({'latterPad':latterPad})
 
 if(formateNo == 1){
  htmlStr=pdfHtml({'ReportData':ReportDataTable,'CreatedData':CreatedData,'latterPad':latterPad})

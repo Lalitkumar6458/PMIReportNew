@@ -415,8 +415,8 @@ setItemPerPage(pageSize);
                         <tr>
                           <td className={styles.td_mobile}>
                             <div className={styles.divChemical}>
-                              <h3>Grade:{item.Grade}</h3>
-                              <table>
+                              <h3> Grade:{item.grade}</h3>
+                              <table className="w-full mx-2">
                                 <thead>
                                   <tr>
                                     {item.chemical.map((each, index) => {

@@ -16,7 +16,7 @@ export default function Home({ dashBoardData }) {
   }
 
   return (
-    <>{session ? User({ session, handleSignOut, dashBoardData }) : Guest()}</>
+   <div>{session ? User({ session, handleSignOut, dashBoardData }) : Guest()}</div>
   );
 }
 // Guest

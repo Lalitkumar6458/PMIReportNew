@@ -3,7 +3,9 @@ import LatterPadForm1 from '@/Components/Settings/latterPad/LatterPadForm1'
 import LatterpadSection from './LatterpadSection'
 const HtmlFormate2 = ({ReportData,CreatedData,latterPad}) => {
   const LaterPad_Id=localStorage.getItem('FormateNO')
-const Data =ReportData.map((item)=>{
+  const ReportCreatedData=JSON.parse(localStorage.getItem("ReportCreatedData"))
+
+const Data =ReportCreatedData['reportaddedData'].map((item)=>{
   const obj={
 
   }
@@ -89,16 +91,7 @@ tableList= `<div class="Sizetable">
 return tableList
 
 }
-const Gradedata={
-  Mn: '0.23',
-  Ni: '43Max',
-  Cr: '3-4',
-  Co: '0.4',
-  Pb: '0.45',
-  Nb: '32',
-  Mo: '4max',
-  Fe: 'BAL'
-}
+
 const AlloyContent=(obj)=>{
 
   
@@ -423,14 +416,14 @@ function getHtml(indexId){
   </div>
   <div class="MainInfo">
    <div class="Col_6 heigh_box borderRigth">
-   <div class="textfont borderBottom heigth_25">PMI REPORT NO:-${CreatedData.reportNo} </div>
-   <div class="textfont borderBottom heigth_25">Date : ${CreatedData.date}</div>
-<div class="textfont marTop">Specified Grade: ${CreatedData.Gradename}</div>
+   <div class="textfont borderBottom heigth_25">PMI REPORT NO:-${ReportCreatedData.pmiReportNo} </div>
+   <div class="textfont borderBottom heigth_25">Date : ${ReportCreatedData.date}</div>
+<div class="textfont marTop">Specified Grade: ${ReportCreatedData.grade}</div>
    </div>
    <div class="Col_7 heigh_box ">
-<div class="textfont borderBottom heigth_25">M/S :-  ${CreatedData.partyname}</div>
-<div class="textfont borderBottom heigth_25">Location: ${CreatedData.locationName}</div>
-<div class="textfont borderBottom heigth_25">PO NO:- ${CreatedData.poNo}</div>
+<div class="textfont borderBottom heigth_25">M/S :-  ${ReportCreatedData.clientId}</div>
+<div class="textfont borderBottom heigth_25">Location: ${ReportCreatedData.location}</div>
+<div class="textfont borderBottom heigth_25">PO NO:- ${ReportCreatedData.poNo}</div>
 <div class="textfont heigth_25">CLIENT NAME:-</div>
 
    </div>
@@ -442,13 +435,13 @@ ${reporttable(indexId)}
 <div class="EndPoinPDF">
 <div class="Col_3End borderRigth">
 <div class="nedtext">
-  INSTRUMENT TYPE/ID:- ${CreatedData.instrumentValue}
+  INSTRUMENT TYPE/ID:- ${ReportCreatedData.InstrumentId}
 </div>
 <div class="nedtext">
   X-XRF ANALYER: OXFORD MODEL 
 </div>
 <div class="nedtext">
-  MODEL NO:${CreatedData.modalNovalue}
+  MODEL NO:${ReportCreatedData.ModalNo}
 </div>
 <div class="nedtext">
   SR.NO.:-

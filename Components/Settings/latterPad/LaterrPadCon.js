@@ -1,10 +1,11 @@
 import css from '../../../styles/LatterPad.module.css'
 import React,{useState} from 'react'
 import { PlusOutlined,LoadingOutlined  } from '@ant-design/icons';
-import { Upload, message } from 'antd'
+import { Form, Input, Upload, message } from 'antd'
 import ReportlatterPad from './ReportlatterPad';
 import {PDFViewer,BlobProvider , PDFDownloadLink } from '@react-pdf/renderer';
 import Link from 'next/link';
+import LatterPadForm from '@/Components/FormCon/LatterPadForm';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -23,11 +24,20 @@ const getBase64 = (img, callback) => {
     return isJpgOrPng && isLt2M;
   };
 const LaterrPadCon = ({formId}) => {
+
+
+       let UserId = "";
+       let token;
+       if (typeof localStorage != undefined) {
+         UserId = localStorage.getItem("UserId");
+         token = localStorage.getItem("token");
+       }
     var nameColor=formId==2?' rgb(168, 16, 16)':'#167FDD'
   var FirstLineColor=formId==2?' rgb(168, 16, 16)':'#187EC7'
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
   const[fileObj,setFileObj]=useState()
+
 const intialvalues={
   FirstLinetext1:"Shree Ganeshaye namah",
   FirstLinetext2:"Shree Shubhudra Mata namah",
@@ -50,15 +60,16 @@ const getTextAndSettext=(text,name)=>{
   })
 }
 const setTextChange=(e)=>{
-const {name,value}=e.target
-setFormateData({
-  ...FormateData,
-  [name]:value
-})
-setInputvalue({
-  ...inputValue,
-  text:value
-})
+  const {name,value}=e.target
+            setFormateData({
+              ...FormateData,
+              [name]:value
+            })
+            // setInputvalue({
+            //   ...inputValue,
+            //   text:value
+            // })
+            console.log(name,value,"name,value")
 }
 
   const handleChange = (info) => {
@@ -113,14 +124,15 @@ localStorage.setItem('LatterPadData',JSON.stringify(FormateData))
 localStorage.setItem('FormateNO',formId)
 
   }
+
   return (
    <>
    <div className={css.LatterpadCon}>
         <div className={css.FormatBox}>
             <div className={css.FirstLine}>
-              <p style={{color:FirstLineColor}} onClick={()=>getTextAndSettext(FormateData.FirstLinetext1,'FirstLinetext1')}> || {FormateData.FirstLinetext1}||</p>
-              <p style={{color:FirstLineColor}}  onClick={()=>getTextAndSettext(FormateData.FirstLinetext2,'FirstLinetext2')}>|| {FormateData.FirstLinetext2}||</p>
-              <p style={{color:FirstLineColor}}  onClick={()=>getTextAndSettext(FormateData.FirstLinetext3,'FirstLinetext3')}>||{FormateData.FirstLinetext3} ||</p>
+              <p style={{color:FirstLineColor}} > || {FormateData.FirstLinetext1}||</p>
+              <p style={{color:FirstLineColor}}  >|| {FormateData.FirstLinetext2}||</p>
+              <p style={{color:FirstLineColor}} >||{FormateData.FirstLinetext3} ||</p>
               </div>
 <div className={css.nameLogo}>
   <div className={css.logoBox}>
@@ -147,15 +159,15 @@ localStorage.setItem('FormateNO',formId)
    <p>Your logo</p>
   </div>
   <div className={css.textname}>
-    <h2 style={{color:nameColor}} onClick={()=>getTextAndSettext(FormateData.Agencyname,'Agencyname')}>{FormateData.Agencyname}</h2>
-    <h4 onClick={()=>getTextAndSettext(FormateData.textP,'textP')}>{FormateData.textP}
+    <h2 style={{color:nameColor}} >{FormateData.Agencyname}</h2>
+    <h4 >{FormateData.textP}
 </h4>
   </div>
   <div className={css.infoCon}>
-    <h4 onClick={()=>getTextAndSettext(FormateData.officeNo,'officeNo')}>Office: {FormateData.officeNo}</h4>
-    <h4 onClick={()=>getTextAndSettext(FormateData.mobileNo,'mobileNo')}>Mob: {FormateData.mobileNo} </h4>
+    <h4 >Office: {FormateData.officeNo}</h4>
+    <h4 >Mob: {FormateData.mobileNo} </h4>
 
-    <h4 onClick={()=>getTextAndSettext(FormateData.email,'email')}>Email:{FormateData.email}
+    <h4 >Email:{FormateData.email}
 </h4>
 
   </div>
@@ -166,17 +178,31 @@ formId==2?null:
   <h5 onClick={()=>getTextAndSettext(FormateData.textContent,'textContent')}>{FormateData.textContent}</h5>
 </div>}
 
-<div className={ formId == 2?`${css.AddressCon} ${css.FormChangeClass}`:`${css.AddressCon}`} onClick={()=>getTextAndSettext(FormateData.address,'address')}>
+<div className={ formId == 2?`${css.AddressCon} ${css.FormChangeClass}`:`${css.AddressCon}`} >
 {FormateData.address}
 </div>
         </div>
 
-        <div className={css.SetInputField}>
+
+<div className="mt-3">
+<LatterPadForm imageUrl={imageUrl} loading={loading} handleChange={handleChange} beforeUpload={beforeUpload} setTextChange={setTextChange} intialvalues={intialvalues}/>
+</div>
+
+
+
+
+
+
+
+
+
+
+       {/* <div className={css.SetInputField}>
 
           <input type='text' value={inputValue.text} name={inputValue.name} onChange={setTextChange}/>
           <button onClick={()=>SaveLaterPadData()}>Save</button>
-        </div>
-        <BlobProvider
+    </div>*/}
+       {/* <BlobProvider
                 document={<ReportlatterPad  />}
                 style={styles.viewer}
                 filename="example.pdf"
@@ -190,7 +216,6 @@ formId==2?null:
 
                     <>
 
-                    {/* <iframe src={url} title="Example PDF" filename="exmple.pdf" width="100%" height="500px"></iframe> */}
 
                     <Link href={url != undefined?url:""}  className="btnBox mx-3" target="_blank">
                       View PDF
@@ -199,6 +224,7 @@ formId==2?null:
                   )
                 }
               </BlobProvider>
+            */}
         </div>  
    </>
   )
