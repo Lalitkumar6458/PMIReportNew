@@ -1,11 +1,13 @@
 import css from '../../../styles/LatterPad.module.css'
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import { PlusOutlined,LoadingOutlined  } from '@ant-design/icons';
 import { Form, Input, Upload, message } from 'antd'
 import ReportlatterPad from './ReportlatterPad';
 import {PDFViewer,BlobProvider , PDFDownloadLink } from '@react-pdf/renderer';
 import Link from 'next/link';
 import LatterPadForm from '@/Components/FormCon/LatterPadForm';
+import axios from 'axios';
+import { ApiEndPoint } from '@/public/ApiEndPoint';
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -37,6 +39,8 @@ const LaterrPadCon = ({formId}) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
   const[fileObj,setFileObj]=useState()
+  const [isLaterPadCreated, setIsLaterPadCreated] = useState(false);
+  const [isLaterPadEdit, setIsLaterPadEdit] = useState(false);
 
 const intialvalues={
   FirstLinetext1:"Shree Ganeshaye namah",
@@ -81,6 +85,64 @@ const setTextChange=(e)=>{
       });
 
   };
+  const GetLatterpadData=async()=>{
+
+    // messageAlert("loading", "Geting Client Data...");
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    const data_obj = {
+      userId: UserId,
+    };
+    await axios
+      .get(`${ApiEndPoint}latterpad/`, { params: data_obj })
+      .then((response) => {
+        console.log("response 7h latter", response);
+        if (response.status == 200) {
+          //  setClientData(response.data.data);
+          if(response.data.data.length === 0){
+            setIsLaterPadCreated(false)
+          }else{
+            setIsLaterPadCreated(true)
+            const x=response.data.data[0]
+
+            setImageUrl(x.logo)
+            setFormateData(
+              {
+                id:x._id,
+                FirstLinetext1:x.text1,
+                FirstLinetext2:x.text2,
+                FirstLinetext3:x.text3,
+                Agencyname:x.agencyName,
+                textP:x.heading,
+                mobileNo:x.mobileNo,
+                officeNo:x.officeNo,
+                email:x.email,
+                textContent:x.description,
+                address:x.address,
+              }
+            )
+          }
+       
+          // messageAlert("success", "Succesfully Get all client data");
+        }else if (response.status == 201) {
+              // setClientData(response.data.data);
+              // messageAlert("success", "Data Not Found");
+        }
+      })
+      .catch((error) => {
+        // dispatch({
+        //   type: ERROR_FINDING_USER
+        // })
+        console.log(error, "error");
+        messageAlert("error", error.message);
+      });
+
+   
+
+
+  }
+  useEffect(() => {
+    GetLatterpadData()
+  }, [])
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -124,7 +186,10 @@ localStorage.setItem('LatterPadData',JSON.stringify(FormateData))
 localStorage.setItem('FormateNO',formId)
 
   }
-
+const EditLatterPad=()=>{
+  setIsLaterPadEdit(true)
+  setIsLaterPadCreated(false)
+}
   return (
    <>
    <div className={css.LatterpadCon}>
@@ -182,10 +247,22 @@ formId==2?null:
 {FormateData.address}
 </div>
         </div>
+<div className='flex items-center justify-center mt-5'>
+{
+  isLaterPadCreated?<button
+  className="bg-mainDark text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
+  onClick={()=>EditLatterPad()}
+>
+  Edit Latter Pad
+</button>:null
+}
 
-
+</div>
 <div className="mt-3">
-<LatterPadForm imageUrl={imageUrl} loading={loading} handleChange={handleChange} beforeUpload={beforeUpload} setTextChange={setTextChange} intialvalues={intialvalues}/>
+{
+  isLaterPadCreated?null:<LatterPadForm imageUrl={imageUrl}  loading={loading} handleChange={handleChange} beforeUpload={beforeUpload} setTextChange={setTextChange} intialvalues={FormateData} formateId={formId} isLaterPadEdit={isLaterPadEdit} setIsLaterPadCreated={setIsLaterPadCreated}/>
+}
+
 </div>
 
 

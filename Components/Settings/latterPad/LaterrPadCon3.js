@@ -8,8 +8,8 @@ import {PDFViewer,BlobProvider , PDFDownloadLink } from '@react-pdf/renderer';
 import Link from 'next/link';
 import LatterPadForm from '@/Components/FormCon/LatterPadForm';
 
-const LaterrPadCon3 = () => {
-    let formId = 2
+const LaterrPadCon3 = ({formId}) => {
+  
     var nameColor = formId == 2 ? ' rgb(168, 16, 16)' : '#167FDD'
     var FirstLineColor = formId == 2 ? ' rgb(168, 16, 16)' : '#187EC7'
     const intialvalues = {
@@ -176,7 +176,7 @@ const LaterrPadCon3 = () => {
         </div>
 
         <div className="mt-3">
-<LatterPadForm  setTextChange={setTextChange} intialvalues={intialvalues}/>
+<LatterPadForm  setTextChange={setTextChange} intialvalues={intialvalues} formateId={formId}/>
 </div>
 
   
