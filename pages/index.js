@@ -7,7 +7,10 @@ import { getSession, useSession, signOut } from "next-auth/react";
 import {WhatsappShareButton,WhatsappIcon} from 'next-share'
 import axios from "axios";
 import { ApiEndPoint } from "@/public/ApiEndPoint";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {Popconfirm, Table, message} from "antd"
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBinLine } from "react-icons/ri";
 export default function Home({ dashBoardData }) {
         
   const { data: session, status } = useSession();
@@ -40,6 +43,17 @@ Router.push("/login");
 }
 
 function User({ session, handleSignOut,dashBoardData }) {
+    const [messageApi, contextHolder] = message.useMessage();
+
+   function messageAlert(type, content) {
+     const key = "updatable";
+
+     messageApi.open({
+       key,
+       type,
+       content,
+     });
+   }
    let UserId = "";
    let token;
    if (typeof localStorage != undefined) {
@@ -75,14 +89,138 @@ const getUserLogin=async()=>{
       // messageAlert("error", error.message);
     });
 }
+    const [reportData, setReportData] = useState([]);
+const getReportCreatedData = async () => {
+  messageAlert("loading", "Geting Client Data...");
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  const data_obj = {
+    userId: UserId,
+  };
+  await axios
+    .get(`${ApiEndPoint}report/`, { params: data_obj })
+    .then((response) => {
+      console.log("response 7h dashboard", response);
+      if (response.status == 200) {
+        setReportData(response.data.data);
+        messageAlert("success", "Succesfully Get all client data");
+      } else if (response.status == 201) {
+        setReportData(response.data.data);
+        messageAlert("success", "Data Not Found");
+      }
+    })
+    .catch((error) => {
+      // dispatch({
+      //   type: ERROR_FINDING_USER
+      // })
+      console.log(error, "error");
+      messageAlert("error", error.message);
+    });
+};
+  const Deletegrade = async (id) => {
+    messageAlert("loading", "Deleting Grade...");
 
+    const response = await fetch(`${ApiEndPoint}report/`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Connection: "Keep-Alive",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        id: id,
+        userId: UserId,
+      }),
+    });
+    const data = await response.json();
+    console.log("data", data);
+    if (response.ok) {
+      console.log("Data saved to database");
+      getReportCreatedData();
+      messageAlert("success", "Succesfully Deleted report");
+    } else {
+      messageAlert("error", "Error deleting...");
+
+      console.error("Error saving data to database");
+    }
+  };
 
 useEffect(()=>{
 getUserLogin()
+getReportCreatedData()
 },[])
+const EditReport=(data)=>{
+  console.log(data, "edit report");
+  const url="/Report"
+  localStorage.setItem("EditReportData", JSON.stringify(data));
+  localStorage.setItem("reportAddedData", JSON.stringify(data.reportaddedData)); 
+  Router.push(
+    {
+      pathname: url,
+      query: { data: JSON.stringify(data) },
+    },
+    url
+  );
+}
+const cancel = (e) => {
+  console.log(e);
+  // message.error("Click on No");
+};
+
+
+const columns = [
+  {
+    title: "Client Name",
+    dataIndex: "clientName",
+    key: "clientName",
+  },
+  {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+  },
+  {
+    title: "Grade",
+    dataIndex: "grade",
+    key: "grade",
+  },
+  {
+    title: "Action",
+    dataIndex: "action",
+   render:(_,record)=>{
+return (
+  <div className="flex items-center gap-4">
+    <button
+      onClick={() => EditReport(record)}
+      className="w-[30px] h-[30px] rounded-full bg-mainDark text-white text-[1.7rem] flex items-center justify-center"
+    >
+      <FiEdit />
+    </button>
+    <Popconfirm
+      title="Delete the report"
+      description="Are you sure to delete this report?"
+      onConfirm={() => Deletegrade(record._id)}
+      onCancel={cancel}
+      okText="Yes"
+      cancelText="No"
+    >
+      <button
+
+        className="w-[30px] h-[30px] rounded-full bg-red-700 text-white text-[1.7rem] flex items-center justify-center"
+      >
+        <RiDeleteBinLine />
+      </button>
+    </Popconfirm>
+  </div>
+);
+   }
+  },
+];
+
+
   return (
     <>
       <Layout title="Dashboard" paddingTop="60px">
+        {contextHolder}
         <div className={styles.dashboard_con}>
           <div className={styles.DashBoxs}>
             <div className="row">
@@ -199,12 +337,17 @@ getUserLogin()
               </div>
             </div>
           </div>
-
+          <Table dataSource={reportData} columns={columns} />;
           <div className={styles.reportButon}>
             <button
               className={styles.reportBtn}
               shape="round"
-              onClick={() => Router.push("/Report")}
+              onClick={() =>{
+                localStorage.removeItem("reportAddedData");
+                localStorage.removeItem("EditReportData");
+                localStorage.removeItem("ReportCreatedData")
+
+                Router.push("/Report")}}
             >
               <FileAddOutlined />{" "}
               <span className={styles.reportText}>Report</span>

@@ -8,9 +8,20 @@ import { getSession} from "next-auth/react"
 import ReportFormate from '@/Components/Settings/ReportFormate';
 import LatterPad from '@/Components/Settings/latterPad/LatterPad';
 import MachineInfo from '@/Components/Settings/MachineInfo';
+import { useRouter } from 'next/router';
 
 const Settings = ({session}) => {
   const[activetab,setActivetab]=useState("User Profile")
+   const router = useRouter();
+   const { query } = router;
+const [activetabkey, setActiveTabKey] = useState(
+  query.pageId ? parseInt(query.pageId) : 1
+);
+   // Access the query parameters from the URL
+
+   // Now you can access individual query parameters like query.paramName
+   const paramName = query.pageId?query.pageId:1;
+   console.log("paramName", paramName);
     const tabsItem = [
       {
         key: 1,
@@ -40,6 +51,8 @@ const Settings = ({session}) => {
     ];
     const tabChangeHandler=(key)=>{
       setActivetab(tabsItem[key-1]['label'])
+      setActiveTabKey(key)
+       router.push(`/Settings?pageId=${key}`);
     }
    
     
@@ -47,10 +60,15 @@ const Settings = ({session}) => {
     <>
       <Layout title="Settings">
         <div className={css.Settings_page}>
-            <h3>{activetab}</h3>
+          <h3>{activetab}</h3>
 
           <div className={css.Settings_Tabs}>
-            <Tabs tabPosition={"top"} items={tabsItem} onChange={tabChangeHandler} />
+            <Tabs
+              tabPosition={"top"}
+              activeKey={activetabkey}
+              items={tabsItem}
+              onChange={tabChangeHandler}
+            />
           </div>
         </div>
       </Layout>

@@ -105,6 +105,7 @@ const ReportTable = ({data,gradeDataC,Gradename}) => {
 const { TextArea } = Input;
 var tabledaa=data
 AllData=data
+
 var getOldData=JSON.parse(localStorage.getItem("reportAddedData"))||[]
 const [dataSource, setDataSource] = useState([...getOldData
 ]);

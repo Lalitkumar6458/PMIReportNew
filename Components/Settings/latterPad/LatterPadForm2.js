@@ -5,7 +5,7 @@ const LatterPadForm2 = () => {
     const latterpad1=()=>{
         const LaterPadData=JSON.parse(localStorage.getItem('LatterPadData'))||{}
         const Img=localStorage.getItem('base64Img')
-        const htmlStr=`
+        const htmlStr = `
         <style>
         .textFirst{
           display: flex;
@@ -85,20 +85,20 @@ const LatterPadForm2 = () => {
         
         </style>
         <div class="textFirst">
-        <div class="textLater">|| ${LaterPadData.FirstLinetext1} ||</div>
-        <div class="textLater">|| ${LaterPadData.FirstLinetext2} ||</div>
-        <div class="textLater">|| ${LaterPadData.FirstLinetext3} ||</div>
+        <div class="textLater">|| ${LaterPadData.text1} ||</div>
+        <div class="textLater">|| ${LaterPadData.text2} ||</div>
+        <div class="textLater">|| ${LaterPadData.text3} ||</div>
         </div>
         <div class="nameLogo">
           <div class="Logobox">
-            <img class="logoImg" src=${Img} alt="logo"/>
+            <img class="logoImg" src=${LaterPadData?.logo} alt="logo"/>
           </div>
           <div class="nametext">
       <div class="AgencyName">
-      ${LaterPadData.Agencyname}
+      ${LaterPadData.agencyName}
       </div>
       <div class="Nametext">
-      ${LaterPadData.textP}
+      ${LaterPadData.heading}
       </div>
           </div>
           <div class="Contact_info">
@@ -114,7 +114,7 @@ const LatterPadForm2 = () => {
         </div>
         
                    
-        `
+        `;
       return htmlStr
       }
   return latterpad1()

@@ -34,16 +34,19 @@ import {
 } from "antd";
 import ReportTable from "@/Components/Reportcomponents/ReportTable";
 import { BsTable, BsMenuButtonWide } from "react-icons/bs";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import Reportmobilelist from "@/Components/Reportcomponents/Reportmobilelist";
 import { getSession, useSession, signOut } from "next-auth/react"
 import axios from "axios";
 
-let allData=[]
-var count=1
 const Report = ({ reportData,session }) => {
   console.log(reportData, "reportData")
-  const selectRef = useRef(null);
+  const router = useRouter();
+
+
+  var EditData = JSON.parse(localStorage.getItem("EditReportData"));
+  console.log(EditData, "getData edit");
+
   const [allReportdata, setAllReportData] = useState({});
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
@@ -51,7 +54,7 @@ const Report = ({ reportData,session }) => {
   const[getAllData,setGetAllData]=useState({})
   const [SelecteGradeData, setSelecteGradeData] = useState({});
   const [AgencyUser, setAgencyUser] = useState('');
-
+const [clientSelected,setClientSelected]=useState('')
     const [form] = Form.useForm();
        let UserId = "";
        let token;
@@ -59,6 +62,7 @@ const Report = ({ reportData,session }) => {
          UserId = localStorage.getItem("UserId");
          token = localStorage.getItem("token");
        }
+
   const onFinish = (values) => {
      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     const reportAddedData = JSON.parse(localStorage.getItem("reportAddedData"));
@@ -66,73 +70,82 @@ const Report = ({ reportData,session }) => {
 const data = {
   ...values,
   userId: UserId,
-  date: new Date(values.date.format("YYYY-MM-DD")),
-  poDate: new Date(values.poDate.format("YYYY-MM-DD")),
+  clientName: clientSelected,
+  date: new Date(values?.date?.format("YYYY-MM-DD")),
+  poDate: new Date(values?.poDate?.format("YYYY-MM-DD")),
   reportaddedData: reportAddedData,
   chemical: SelecteGradeData?.chemical,
 };
+
 console.log("data", data);
-   axios
-     .post(ApiEndPoint + "report", data)
-     .then((response) => {
-       // Handle the response from the backend
-       console.log("response",response);
-       if (response.status == 200) {
-         //  getAllChemicalData();
-         //  setIsModalOpen(false);
-         const Data=response.data.data
-         console.log(data,"resposr data")
-         var url = "/ReportPdf";
-         Router.push(
-           { pathname: url, query: { data: JSON.stringify(Data) } },
-           url
-         );
-         //  Router.push("/ReportPdf")
-       }
-     })
-     .catch((error) => {
-       console.log("error", error);
-       // Handle any errors or unauthorized access
-     });
+if (EditData){
+  
+  data["id"] = EditData._id
+  console.log("data edit", data);
+ axios
+   .put(ApiEndPoint + "report", data)
+   .then((response) => {
+     // Handle the response from the backend
+     console.log("response", response);
+     if (response.status == 200) {
+       const Data = response.data.data;
+       console.log(Data, "resposr data");
+       var url = "/ReportPdf";
+       localStorage.setItem("ReportCreatedData", JSON.stringify(Data));
+       Router.push(
+         { pathname: url, query: { data: JSON.stringify(Data) } },
+         url
+       );
+        Router.push("/ReportPdf")
+     }
+   })
+   .catch((error) => {
+     console.log("error", error);
+     // Handle any errors or unauthorized access
+   });
+}else{
+  axios
+    .post(ApiEndPoint + "report", data)
+    .then((response) => {
+      // Handle the response from the backend
+      console.log("response", response);
+      if (response.status == 200) {
+        //  getAllChemicalData();
+        //  setIsModalOpen(false);
+        const Data = response.data.data;
+        console.log(Data, "resposr data");
+        var url = "/ReportPdf";
+        localStorage.setItem("ReportCreatedData", JSON.stringify(Data._doc));
+        Router.push(
+          { pathname: url, query: { data: JSON.stringify(Data._doc) } },
+          url
+        );
+        //  Router.push("/ReportPdf")
+      }
+    })
+    .catch((error) => {
+      console.log("error", error);
+      // Handle any errors or unauthorized access
+    });
+}
+
 
   }
-  const [items2, setItems2] = useState(reportData?.instrument_id?reportData?.instrument_id?.map((item,index)=>{
-    return{
-      value:item,
-      label:item,
-      key:index
-    }
-  }):[]);
-  const [modalNo, setModalNo] = useState(reportData?.model_info?
-    reportData?.model_info?.map((item,index)=>{
-      return{
-        value:item,
-        label:item,
-        key:index
-      }
-    }):[])
+
+
   
-  const [name, setName] = useState("");
-  const [modalname, setModalName] = useState("");
+
   const [addeddata, setAddeddata] = useState([]);
 const [gradeDataC,setGradeDataC]=useState({})
 
-const[api_endpoint,setApiEndpoint]=useState(ApiEndPoint)
   
 
 
   const childRef = useRef();
 
-  const inputRef = useRef(null);
-  const inputRef1 = useRef(null);
 
   const [placement, setPlacement] = useState("bottom");
-  const showDrawer = () => {
-    setOpen(true);
-  };
-  const showDrawer1 = () => {
-    setOpen1(true);
-  };
+
   const onClose = () => {
     setOpen(false);
   };
@@ -146,7 +159,6 @@ const[api_endpoint,setApiEndpoint]=useState(ApiEndPoint)
   };
 
 
-  const current = new Date();
 
   const handleMenuClick = (e) => {
 
@@ -168,63 +180,10 @@ const DataReport={
     //  Router.push("/ReportPdf")
   };
 
-  const onNameChange = (event) => {
-    setName(event.target.value);
-  };
-  const onModalNameChange = (event) => {
-    setModalName(event.target.value);
-  };
-  let index = 0;
-  const addItem = async(e) => {
-    console.log(items2,"items2")
-    e.preventDefault();
-    setItems2([
-      ...items2,
-      {
-        value: name,
-        label: name,
-      } || `New item ${index++}`,
-    ]);
-    setName("");
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-    try{
-      const objData={
-        instrument_id:name,
-        user_email:session.user.email,
-       }
-    let resData= await axios.post(`${ApiEndPoint}instrument_info/`,objData)
-    }catch(error){
-  console.log("error",error)
-    }
-   
-  };
-  const addmodalNo = async (e) => {
-    e.preventDefault();
-    setModalNo([
-      ...modalNo,
-      {
-        value: modalname,
-        label: modalname,
-      } || `New item ${index++}`,
-    ]);
-    setModalName("");
-    setTimeout(() => {
-      inputRef1.current?.focus();
-    }, 0);
-    try{
-      const objData={
-        model_info:modalname,
-        user_email:session.user.email
-       }
-    let resData= await axios.post(`${ApiEndPoint}set_model_info/`,objData)
-    }catch(error){
-  console.log("error",error)
-     
-    }
-     
-  };
+
+const selectClientChange=(value,option)=>{
+setClientSelected(option.label);
+}
   const items = [
     {
       label: "PDF",
@@ -283,27 +242,16 @@ let getDataLocal=JSON.parse(localStorage.getItem('CreatedData'))||null
 // Format the date as "YYYY-MM-DD" (required by the input type="date")
 var formattedDate = currentDate.toISOString().slice(0, 10);
 const [partyname, setPartyName] = useState(getDataLocal?getDataLocal.partyname:"");
-
   const [agencyName, setAgencyName] = useState(getDataLocal?getDataLocal.agencyName:reportData?.user_info);
   const [locationName, setLocationName] = useState(getDataLocal?getDataLocal.locationName:"Mumbai");
   const [reportNo, setReportNo] = useState(getDataLocal?getDataLocal.reportNo:'');
   const [poNo, setPoNo] = useState(getDataLocal?getDataLocal.poNo:'');
   const [date, setDate] = useState(getDataLocal?getDataLocal.date == ''?formattedDate:getDataLocal.date:formattedDate);
-  const [specifiedGrade, setSpecifiedGrade] = useState([
-    ...Specgrade
-  ]);
   const [modalNovalue, setModalNoValue] = useState(getDataLocal?getDataLocal.modalNovalue:"");
   const [Gradename, setGradeName] = useState(getDataLocal?getDataLocal.Gradename:"");
-
   const [instrumentValue, setInstrumentValue] = useState(getDataLocal?getDataLocal.instrumentValue:"");
 
-  const partName = reportData?.user_based_client?.map((item,index)=>{
-    return {
-value:item.client_name,
-label:item.client_name,
-key:index,
-    }
-  })||[]
+
   
   const getGradeChemical=async(value)=>{
     console.log("value getGradeChemical", value);
@@ -336,33 +284,8 @@ key:index,
 
   }
 
-  const CreatePdf = () => {
-    alert("hell" + partyname);
 
-    // Router.push("/ReportPdf")
-  };
-  const SelectedGrade=async(value)=>{
-    try{
-      const objData={
-        grade_name:value,
-        user_email:session.user.email
-       }
-    let resData= await axios.get(`${ApiEndPoint
-    }chemical_based_on_grade/`,{params:objData})
-
-    if(resData.status === 200){
-      console.log("resData.data[0].chemical_name",typeof resData.data[0].chemical_name)
-    setGradeDataC(resData.data[0].chemical_name)
-  }else{
-    console.log(resData,"data not get from backemd")
-
-  }
-    }catch(error){
-  console.log("error",error)
-     
-    }
-
-  }
+ 
   const getallData = async () => {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     const data_obj = {
@@ -390,51 +313,34 @@ key:index,
       });
   };
 
-
+const dataFormate=(date)=>{
+let a=date?.split("T")[0].split("-")
+return a[2]+"-"+a[1]+"-"+a[0]
+}
   useEffect(()=>{
     getallData()
-    let getDataLocal=localStorage.getItem('CreatedData')
-    if(
-      getDataLocal
-    ){
-      localStorage.setItem("CreatedData",JSON.stringify({...JSON.parse(getDataLocal),'locationName':locationName,'agencyName':agencyName}))
-      // $('#GradeId').trigger('change');
-      // selectRef.current.props.onChange();
-      if(JSON.parse(getDataLocal)?.Gradename){
-        // getGradeChemical(JSON.parse(getDataLocal)?.Gradename)
-        SelectedGrade(JSON.parse(getDataLocal)?.Gradename)
-      }
-    }else{
-      localStorage.setItem("CreatedData",JSON.stringify({'locationName':locationName,'agencyName':agencyName}))
-    }
+
 
   },[])
   useEffect(() => {
+    if (EditData){
+
+      setSelecteGradeData({ chemical: EditData.chemical, grade: EditData.grade });
+      setClientSelected(EditData.clientName);
  form.setFieldsValue({
-   agencyName: getAllData?.UserData?.name,
+   ...EditData,
+   poDate:EditData?.poDate? dayjs(dataFormate(EditData?.poDate), "DD-MM-YYYY"):null,
+   date: dayjs(dataFormate(EditData?.date), "DD-MM-YYYY"),
  });
+    }else{
+       form.setFieldsValue({
+         agencyName: getAllData?.UserData?.name,
+       });
+    }
 console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
   }, [getAllData]);
-  const commonOnChangeFun=(value,setvalue,name)=>{
 
-setvalue(value)
 
-    if (name === "partyname"){
-      const userSelected = reportData?.user_based_client?.filter((item) => item.client_name === value)
-      console.log("userSelected", userSelected)
-      localStorage.setItem('ClientSelected',JSON.stringify(userSelected[0]))
-}
-
-  let getDataLocal=localStorage.getItem('CreatedData')
-  if(
-    getDataLocal
-  ){
-    localStorage.setItem("CreatedData",JSON.stringify({...JSON.parse(getDataLocal),[name]:value}))
-  }
-  else{
-    localStorage.setItem("CreatedData",JSON.stringify({[name]:value}))
-  }
-  }
   console.log("todayData formfdjvh", todayData);
   return (
     <>
@@ -471,6 +377,7 @@ setvalue(value)
                       placeholder="Select a Client"
                       optionFilterProp="children"
                       onSearch={onSearch}
+                      onChange={selectClientChange}
                       filterOption={(input, option) =>
                         (option?.label ?? "")
                           .toLowerCase()
@@ -858,7 +765,7 @@ setvalue(value)
                 className="bg-mainDark text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
                 type="sumbit"
               >
-                Create Report
+                {EditData ? "Update Report" : "Create Report"}
               </button>
             </div>
           </Form.Item>

@@ -1,157 +1,142 @@
-import React from 'react'
-import LatterPadForm1 from '../Settings/latterPad/LatterPadForm1'
-import LatterPadForm2 from '../Settings/latterPad/LatterPadForm2'
+
 import LatterpadSection from './PdfFormates/LatterpadSection'
-const pdfHtml = ({latterPad}) => {
- const LaterPad_Id=localStorage.getItem('FormateNO')
-  const ReportAllData=JSON.parse(localStorage.getItem("ReportAllDAta"))
-  const ReportCreatedData=JSON.parse(localStorage.getItem("ReportCreatedData"))
+import { format } from "date-fns";
+const pdfHtml = ({ latterPad, islaterPadSelected, formateNo, latterPadNo }) => {
 
-  const LaterPadData=JSON.parse(localStorage.getItem('LatterPadData'))||{}
-  const Img=localStorage.getItem('base64Img')
-  console.log('GetSavePdfData',ReportCreatedData)
-const Data =ReportCreatedData['reportaddedData'].map((item)=>{
-  const obj={
+  const ReportCreatedData = JSON.parse(
+    localStorage.getItem("ReportCreatedData")
+  );
 
+  const Data = ReportCreatedData["reportaddedData"].map((item) => {
+    const obj = {};
+
+    Object.keys(item).map((each) => {
+      if (
+        each == "srno" ||
+        each == "size" ||
+        each == "heatno" ||
+        each == "remark" ||
+        each == "qty"
+      ) {
+        obj[each] = item[each];
+      } else if (each == "key") {
+      } else {
+        obj["chemical"] = {
+          ...obj["chemical"],
+          [each]: item[each],
+        };
+      }
+    });
+    return obj;
+  });
+
+  const ceilingValue = Math.ceil(Data.length / 14);
+  function chunkArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
   }
 
-  Object.keys(item).map((each)=>{
-           if(each == 'srno'||each == 'size'||each=='heatno'||each=='remark'||each=='qty'){
-            obj[each]=item[each]
-           }else if(each == 'key'){
-
-           }else{
-            obj['chemical']={
-              ...obj['chemical'],
-              [each]:item[each]
-            }
-           }
-  })
-  return obj
-})
-
-const ceilingValue = Math.ceil(Data.length/14);
-function chunkArray(arr, size) {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
-  }
-  return chunks;
-}
-
-
-
-function reporttable(index_id){
-  let tableList=''
-const listData= chunkArray(Data, 14)[index_id]
-tableList= `<div class="Sizetable">
+  function reporttable(index_id) {
+    let tableList = "";
+    const listData = chunkArray(Data, 14)[index_id];
+    tableList = `<div class="Sizetable">
   <div class="headertable">
     <div  class="srNo ">Sr No.</div>
     <div  class="qty_size">QTY</div>
     <div  class="SizeCol">Size(Descriptions)</div>
-    ${
-       Object.keys(listData[0]?.chemical).map((item,index)=>{
-  return `<div class="chemic_c" key=${index}>${item}</div>`
-       }).join('')
-  
-    }
-    ${
-  
-       'heatno' in listData[0]?`<div class="heatNo">Heat NO</div>`:``
-    }
+    ${Object.keys(listData[0]?.chemical)
+      .map((item, index) => {
+        return `<div class="chemic_c" key=${index}>${item}</div>`;
+      })
+      .join("")}
+    ${"heatno" in listData[0] ? `<div class="heatNo">Heat NO</div>` : ``}
     
     <div class="remark_col">Reamrk</div>
   </div>
-  ${
-    listData.map((item,index)=>{
-      if(index+1 < 16){
+  ${listData
+    .map((item, index) => {
+      if (index + 1 < 16) {
         return `
         <div class="TableRow" >
           <div class="srNo">${item.srno}</div>
           <div  class="qty_size">${item.qty}</div>
           <div class="SizeCol">${item.size}</div>
         
-          ${
-            Object.keys(item.chemical).map((each)=>{
+          ${Object.keys(item.chemical)
+            .map((each) => {
               return `
           <div class="chemic_c">${item.chemical[each]}</div>
-              `
-            }).join('')
-          }
+              `;
+            })
+            .join("")}
           ${
-  
-            'heatno' in listData[0]?`<div class="heatNo">${item.heatno}</div>`:``
-         }
+            "heatno" in listData[0]
+              ? `<div class="heatNo">${item.heatno}</div>`
+              : ``
+          }
          
           
           <div class="remark_col">${item.remark}</div>
         </div>
-        `
+        `;
       }
-  
-    }).join('')
+    })
+    .join("")}
+
+  </div>`;
+
+    return tableList;
   }
-
-  </div>`
-
-return tableList
-
-}
-const Gradedata=ReportCreatedData?.chemical
-const AlloyContent=(obj)=>{
-
-  
-return `
+  const Gradedata = ReportCreatedData?.chemical;
+  const AlloyContent = (obj) => {
+    return `
 <div class="alloyContent">
 <table>
   <thead>
     <tr>
-    ${
-      obj.map((item)=>{
-        return` <th>${item.Element}</th>`
-      }).join("")
-    }
+    ${obj
+      .map((item) => {
+        return ` <th>${item.Element}</th>`;
+      })
+      .join("")}
     </tr>
   </thead>
   <tbody>
       <tr>
-      ${
-        obj.map((item)=>{
-          return` <td>${item.percent}</td>`
-        }).join("")
-      }
+      ${obj
+        .map((item) => {
+          return ` <td>${item.percent}</td>`;
+        })
+        .join("")}
     </tr>
   </tbody>
 </table>
-</div>`
-}
+</div>`;
+  };
 
-function styleFun(DataLen){
-  const lenData=Object.keys(DataLen.chemical).length
-  let sizeWidth='30%'
-  if(lenData == 4){
-    sizeWidth= 'heatno' in DataLen?"50%":'60%'
-  }else if(lenData == 5){
-    sizeWidth= 'heatno' in DataLen?"45%":'55%'
+  function styleFun(DataLen) {
+    const lenData = Object.keys(DataLen.chemical).length;
+    let sizeWidth = "30%";
+    if (lenData == 4) {
+      sizeWidth = "heatno" in DataLen ? "50%" : "60%";
+    } else if (lenData == 5) {
+      sizeWidth = "heatno" in DataLen ? "45%" : "55%";
+    } else if (lenData == 6) {
+      sizeWidth = "heatno" in DataLen ? "40%" : "50%";
+    } else if (lenData == 7) {
+      sizeWidth = "heatno" in DataLen ? "35%" : "45%";
+    } else if (lenData == 8) {
+      sizeWidth = "heatno" in DataLen ? "30%" : "40%";
+    } else if (lenData == 9) {
+      sizeWidth = "heatno" in DataLen ? "30%" : "40%";
+    } else if (lenData == 10) {
+      sizeWidth = "heatno" in DataLen ? "25%" : "35%";
+    }
 
-  }else if(lenData == 6){
-    sizeWidth= 'heatno' in DataLen?"40%":'50%'
-
-  }else if(lenData == 7){
-    sizeWidth= 'heatno' in DataLen?"35%":'45%'
-
-  }else if(lenData == 8){
-    sizeWidth= 'heatno' in DataLen?"30%":'40%'
-
-  }else if(lenData == 9){
-    sizeWidth= 'heatno' in DataLen?"30%":'40%'
-
-  }else if(lenData == 10){
-    sizeWidth= 'heatno' in DataLen?"25%":'35%'
-
-  }
-
-  const styleSheet=`
+    const styleSheet = `
   <style>
   .mainDiv{
     width: 100%;
@@ -363,21 +348,22 @@ function styleFun(DataLen){
       }
      
   </style>
-  `
-return styleSheet
+  `;
+    return styleSheet;
+  }
+  const formatDate = (dateString) => {
+    // Adjust the format string as per your desired date format
+    return format(new Date(dateString), "dd/MM/yyyy");
+  };
 
-}
-
-
-
-function getHtml(indexId){
-  const StrinHtml=`
+  function getHtml(indexId) {
+    const StrinHtml = `
 <html>
   <body>
    ${styleFun(Data[0])}
    <div class="mainDiv">
    <div class="Topheader">
-   ${LatterpadSection(LaterPad_Id,latterPad)}
+   ${LatterpadSection(latterPadNo, latterPad, islaterPadSelected)}
    </div>
    <div class="topHeading">
     POSITIVE MATERIAL IDENTIFICTION REPORT
@@ -386,16 +372,18 @@ function getHtml(indexId){
     <div class="Col_3 heigh_box borderRigth">
     <div class="textfont">PMI REPORT NO:${ReportCreatedData.pmiReportNo} </div>
     <div class="textfont">Purchase Order:${ReportCreatedData.poNo} </div>
-<div class="textfont">Material Specification/Grade:${ReportCreatedData.grade}</div>
+<div class="textfont">Material Specification/Grade:${
+      ReportCreatedData.grade
+    }</div>
     </div>
     <div class="Col_6 heigh_box borderRigth">
-<div class="textfont">Party Name: ${ReportCreatedData.clientId}</div>
+<div class="textfont">Party Name: ${ReportCreatedData.clientName}</div>
 <div class="textfont">Testing Agency :${ReportCreatedData.agencyName}</div>
 <div class="textfont">PMI Location: ${ReportCreatedData.location}</div>
     </div>
     <div class="Col_3 heigh_box LastCol  ">
-     <div class="textfont">DATE: ${ReportCreatedData.date}</div>
-     <div class="textfont">Page No.: ${indexId+1}</div>
+     <div class="textfont">DATE: ${formatDate(ReportCreatedData.date)}</div>
+     <div class="textfont">Page No.: ${indexId + 1}</div>
     </div> 
    <div class="Col_3 heigh_box_2 borderRigth borderTop pd_0">
     <div class="topHeading_2">
@@ -452,22 +440,17 @@ PMI Analytical Services.
   </body>
 </html>
 
-`
-return StrinHtml
-}
+`;
+    return StrinHtml;
+  }
 
+  const DataList = [];
 
-const DataList=[]
+  for (let i = 1; i <= ceilingValue; i++) {
+    DataList.push(getHtml(i - 1));
+  }
 
-for(let i=1;i<=ceilingValue;i++){
-  DataList.push(getHtml(i-1))
-}
-
-
-
-return DataList
-
-
-}
+  return DataList;
+};
 
 export default pdfHtml

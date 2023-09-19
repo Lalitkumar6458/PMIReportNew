@@ -1,126 +1,122 @@
 import React from 'react'
 import LatterPadForm1 from '@/Components/Settings/latterPad/LatterPadForm1'
 import LatterpadSection from './LatterpadSection'
+import { format } from "date-fns";
+const HtmlFormate3 = ({
+  latterPad,
+  islaterPadSelected,
+  formateNo,
+  latterPadNo,
+}) => {
 
-const HtmlFormate3 = ({ReportData,CreatedData,latterPad}) => {
-  const LaterPad_Id=localStorage.getItem('FormateNO')
-  const ReportCreatedData=JSON.parse(localStorage.getItem("ReportCreatedData"))
+  const ReportCreatedData = JSON.parse(
+    localStorage.getItem("ReportCreatedData")
+  );
 
-const Data =ReportCreatedData['reportaddedData'].map((item)=>{
-  const obj={
+  const Data = ReportCreatedData["reportaddedData"].map((item) => {
+    const obj = {};
 
+    Object.keys(item).map((each) => {
+      if (
+        each == "srno" ||
+        each == "size" ||
+        each == "heatno" ||
+        each == "remark" ||
+        each == "qty"
+      ) {
+        obj[each] = item[each];
+      } else if (each == "key") {
+      } else {
+        obj["chemical"] = {
+          ...obj["chemical"],
+          [each]: item[each],
+        };
+      }
+    });
+    return obj;
+  });
+
+  const ceilingValue = Math.ceil(Data.length / 14);
+  function chunkArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
   }
 
-  Object.keys(item).map((each)=>{
-           if(each == 'srno'||each == 'size'||each=='heatno'||each=='remark'||each=='qty'){
-            obj[each]=item[each]
-           }else if(each == 'key'){
-
-           }else{
-            obj['chemical']={
-              ...obj['chemical'],
-              [each]:item[each]
-            }
-           }
-  })
-  return obj
-})
-
-const ceilingValue = Math.ceil(Data.length/14);
-function chunkArray(arr, size) {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
-  }
-  return chunks;
-}
-
-
-function reporttable(index_id){
-  let tableList=''
-const listData= chunkArray(Data, 14)[index_id]
-tableList= `<div class="Sizetable">
+  function reporttable(index_id) {
+    let tableList = "";
+    const listData = chunkArray(Data, 14)[index_id];
+    tableList = `<div class="Sizetable">
   <div class="headertable">
     <div  class="srNo ">Sr No.</div>
     <div  class="qty_size">QTY</div>
     <div  class="SizeCol">Size(Descriptions)</div>
-    ${
-       Object.keys(listData[0]?.chemical).map((item,index)=>{
-  return `<div class="chemic_c" key=${index}>${item}</div>`
-       }).join('')
-  
-    }
-    ${
-  
-       'heatno' in listData[0]?`<div class="heatNo">Heat NO</div>`:``
-    }
+    ${Object.keys(listData[0]?.chemical)
+      .map((item, index) => {
+        return `<div class="chemic_c" key=${index}>${item}</div>`;
+      })
+      .join("")}
+    ${"heatno" in listData[0] ? `<div class="heatNo">Heat NO</div>` : ``}
     
     <div class="remark_col">Reamrk</div>
   </div>
-  ${
-    listData.map((item,index)=>{
-      if(index+1 < 16){
+  ${listData
+    .map((item, index) => {
+      if (index + 1 < 16) {
         return `
         <div class="TableRow" >
           <div class="srNo">${item.srno}</div>
           <div  class="qty_size">${item.qty}</div>
           <div class="SizeCol">${item.size}</div>
         
-          ${
-            Object.keys(item.chemical).map((each)=>{
+          ${Object.keys(item.chemical)
+            .map((each) => {
               return `
           <div class="chemic_c">${item.chemical[each]}</div>
-              `
-            }).join('')
-          }
+              `;
+            })
+            .join("")}
           ${
-  
-            'heatno' in listData[0]?`<div class="heatNo">${item.heatno}</div>`:``
-         }
+            "heatno" in listData[0]
+              ? `<div class="heatNo">${item.heatno}</div>`
+              : ``
+          }
          
           
           <div class="remark_col">${item.remark}</div>
         </div>
-        `
+        `;
       }
-  
-    }).join('')
+    })
+    .join("")}
+
+  </div>`;
+
+    return tableList;
   }
 
-  </div>`
+  function styleFun(DataLen) {
+    const lenData = Object.keys(DataLen.chemical).length;
+    let sizeWidth = "30%";
+    if (lenData == 4) {
+      sizeWidth = "heatno" in DataLen ? "50%" : "60%";
+    } else if (lenData == 5) {
+      sizeWidth = "heatno" in DataLen ? "45%" : "55%";
+    } else if (lenData == 6) {
+      sizeWidth = "heatno" in DataLen ? "40%" : "50%";
+    } else if (lenData == 7) {
+      sizeWidth = "heatno" in DataLen ? "35%" : "45%";
+    } else if (lenData == 8) {
+      sizeWidth = "heatno" in DataLen ? "30%" : "40%";
+    } else if (lenData == 9) {
+      sizeWidth = "heatno" in DataLen ? "30%" : "40%";
+    } else if (lenData == 10) {
+      sizeWidth = "heatno" in DataLen ? "25%" : "35%";
+    }
 
-return tableList
-
-}
-
-
-
-function styleFun(DataLen){
-  const lenData=Object.keys(DataLen.chemical).length
-  let sizeWidth='30%'
-  if(lenData == 4){
-    sizeWidth= 'heatno' in DataLen?"50%":'60%'
-  }else if(lenData == 5){
-    sizeWidth= 'heatno' in DataLen?"45%":'55%'
-
-  }else if(lenData == 6){
-    sizeWidth= 'heatno' in DataLen?"40%":'50%'
-
-  }else if(lenData == 7){
-    sizeWidth= 'heatno' in DataLen?"35%":'45%'
-
-  }else if(lenData == 8){
-    sizeWidth= 'heatno' in DataLen?"30%":'40%'
-
-  }else if(lenData == 9){
-    sizeWidth= 'heatno' in DataLen?"30%":'40%'
-
-  }else if(lenData == 10){
-    sizeWidth= 'heatno' in DataLen?"25%":'35%'
-
-  }
-
-  const styleSheet=`
+    const styleSheet = `
   <style>
   .mainDiv{
     width: 100%;
@@ -426,19 +422,22 @@ function styleFun(DataLen){
         
               }
   </style>
-  `
-return styleSheet
+  `;
+    return styleSheet;
+  }
+  const formatDate = (dateString) => {
+    // Adjust the format string as per your desired date format
+    return format(new Date(dateString), "dd/MM/yyyy");
+  };
 
-}
-
-function getHtml(indexId){
-  const StrinHtml=`
+  function getHtml(indexId) {
+    const StrinHtml = `
 <html>
   <body>
    ${styleFun(Data[0])}
    <div class="mainDiv">
    <div class="Topheader">
-   ${LatterpadSection(LaterPad_Id,latterPad)}
+   ${LatterpadSection(latterPadNo, latterPad, islaterPadSelected)}
 
    </div>
    <div class="testReport_text">
@@ -454,7 +453,7 @@ function getHtml(indexId){
     </div>
   </div>
   <div class="PageNo">
-    PAGE ${indexId+1} Of ${ceilingValue}
+    PAGE ${indexId + 1} Of ${ceilingValue}
   </div>
 
 </div>
@@ -467,33 +466,43 @@ function getHtml(indexId){
 
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Date:</div>
-        <div class="textInfo"> ${ReportCreatedData.date.split("T")[0]}</div>
+        <div class="textInfo"> ${formatDate(ReportCreatedData.date)}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">P.O NO:</div>
-        <div class="textInfo">${ReportCreatedData.poNo}</div>
+        <div class="textInfo">${
+          ReportCreatedData.poNo ? ReportCreatedData.poNo : ""
+        }</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">PO Date:</div>
-        <div class="textInfo">${ReportCreatedData.poDate.split("T")[0]}</div>
+        <div class="textInfo">${
+          ReportCreatedData.poDate ? formatDate(ReportCreatedData.poDate) : ""
+        }</div>
       </div>
       <div class="rowBox">
         <div class= "textInfo borderRigth">Lot NO.:</div>
-        <div class="textInfo">${ReportCreatedData.lotNo}</div>
+        <div class="textInfo">${
+          ReportCreatedData.lotNo ? ReportCreatedData.lotNo : ""
+        }</div>
       </div>
     </div>
     <div class="Col_6 heigh_box ">
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Client:</div>
-        <div class="textInfo">${ReportCreatedData.clientId}</div>
+        <div class="textInfo">${ReportCreatedData.clientName}</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Vendor:</div>
-        <div class="textInfo">${ReportCreatedData.vendor}</div>
+        <div class="textInfo">${
+          ReportCreatedData.vendor ? ReportCreatedData.vendor : ""
+        }</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">Bluk Item Types(As Per reqstn):</div>
-        <div class="textInfo">${ReportCreatedData.blukItemType}</div>
+        <div class="textInfo">${
+          ReportCreatedData.blukItemType ? ReportCreatedData.blukItemType : ""
+        }</div>
       </div>
       <div class="rowBox borderBottom">
         <div class= "textInfo borderRigth">SPECIFIED GRADE:</div>
@@ -502,7 +511,9 @@ function getHtml(indexId){
 
       <div class="rowBox ">
         <div class= "textInfo borderRigth">PMI Location:</div>
-        <div class="textInfo">${ReportCreatedData.location}</div>
+        <div class="textInfo">${
+          ReportCreatedData.location ? ReportCreatedData.location : ""
+        }</div>
       </div>
 
 
@@ -515,13 +526,19 @@ ${reporttable(indexId)}
     <div class="leftDiv">
     <div class="TopDiv">
     <div class="InstrmentId borderRigth">
-    <div class="InstrId borderBottom" >Instrument Type/Id:  ${ReportCreatedData.InstrumentId}</div>
-    <div  class="InstrId borderBottom" >Models No.: ${ReportCreatedData.ModalNo}<</div>
+    <div class="InstrId borderBottom" >Instrument Type/Id:  ${
+      ReportCreatedData.InstrumentId
+    }</div>
+    <div  class="InstrId borderBottom" >Models No.: ${
+      ReportCreatedData.ModalNo
+    }<</div>
     <div  class="InstrId">SR No.:</div>
     </div>
     <div class="modalNo">
       <div class="withness_box borderBottom" >WITNESSED BY:</div>
-      <div class="withness_box"  >INSPECTION AGENCY:${ReportCreatedData.agencyName}</div>
+      <div class="withness_box"  >INSPECTION AGENCY:${
+        ReportCreatedData.agencyName
+      }</div>
     </div>
     </div>
     <div class="BottomDiv">
@@ -542,22 +559,17 @@ ${reporttable(indexId)}
   </body>
 </html>
 
-`
-return StrinHtml
-}
+`;
+    return StrinHtml;
+  }
 
+  const DataList = [];
 
-const DataList=[]
+  for (let i = 1; i <= ceilingValue; i++) {
+    DataList.push(getHtml(i - 1));
+  }
 
-for(let i=1;i<=ceilingValue;i++){
-  DataList.push(getHtml(i-1))
-}
-
-
-
-return DataList
-
-
-}
+  return DataList;
+};
 
 export default HtmlFormate3

@@ -28,6 +28,9 @@ color: #1b2b658c;
 body{
   overflow: hidden;
 }
+.ant-switch{
+  background-color: #8e8e94 ;
+}
 .ant-btn-primary{
   background: var(--dark-blue) !important;
   color: #fff !important;
@@ -491,4 +494,7 @@ color: #000000;
 }
 .cursor_poniter{
   cursor: pointer;
+}
+.ConfirmModal .ant-modal-body{
+  padding: 10px;
 }

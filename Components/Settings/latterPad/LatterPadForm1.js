@@ -1,11 +1,15 @@
 import React from 'react'
 
-const LatterPadForm1 = () => {
-  
-    const latterpad1=()=>{
-        const LaterPadData=JSON.parse(localStorage.getItem('LatterPadData'))||{}
-        const Img=localStorage.getItem('base64Img')
-        const htmlStr=`
+const LatterPadForm1 = ( ) => {
+  const latterpad1 = () => {
+
+
+    const LaterPadData = localStorage.getItem("LatterPadData")
+      ? JSON.parse(localStorage.getItem("LatterPadData"))
+      : {};
+
+    const Img = localStorage.getItem("base64Img");
+    const htmlStr = `
         <style>
         .textFirst{
           display: flex;
@@ -78,42 +82,42 @@ const LatterPadForm1 = () => {
         
         </style>
         <div class="textFirst">
-        <div class="textLater">|| ${LaterPadData.FirstLinetext1} ||</div>
-        <div class="textLater">|| ${LaterPadData.FirstLinetext2} ||</div>
-        <div class="textLater">|| ${LaterPadData.FirstLinetext3} ||</div>
+        <div class="textLater">|| ${LaterPadData?.text1} ||</div>
+        <div class="textLater">|| ${LaterPadData?.text2} ||</div>
+        <div class="textLater">|| ${LaterPadData?.text3} ||</div>
         </div>
         <div class="nameLogo">
           <div class="Logobox">
-            <img class="logoImg" src=${Img} alt="logo"/>
+            <img class="logoImg" src=${LaterPadData?.logo} alt="logo"/>
           </div>
           <div class="nametext">
       <div class="AgencyName">
-      ${LaterPadData.Agencyname}
+      ${LaterPadData?.agencyName}
       </div>
       <div class="Nametext">
-      ${LaterPadData.textP}
+      ${LaterPadData?.heading}
       </div>
           </div>
           <div class="Contact_info">
-      <div class="Contact_text pd_b">Office: ${LaterPadData.officeNo}</div>
-      <div class="Contact_text pd_b">Mob: ${LaterPadData.mobileNo}</div>
+      <div class="Contact_text pd_b">Office: ${LaterPadData?.officeNo}</div>
+      <div class="Contact_text pd_b">Mob: ${LaterPadData?.mobileNo}</div>
       
-      <div class="Contact_text">Email:${LaterPadData.email}</div>
+      <div class="Contact_text">Email:${LaterPadData?.email}</div>
       
           </div>
         </div>
         <div class="pmitext">
-          ${LaterPadData.textContent}
+          ${LaterPadData?.description}
         </div>
         <div class="addresstext">
-          ${LaterPadData.address}
+          ${LaterPadData?.address}
         </div>
         
         
-        `
-      return htmlStr
-      }
-  return latterpad1()
-}
+        `;
+    return htmlStr;
+  };
+  return latterpad1();
+};
 
 export default LatterPadForm1
