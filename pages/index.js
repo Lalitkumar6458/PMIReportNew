@@ -177,6 +177,7 @@ const columns = [
     title: "Date",
     dataIndex: "date",
     key: "date",
+    render:(text)=>text.split("T")[0]
   },
   {
     title: "Grade",
@@ -337,7 +338,52 @@ return (
               </div>
             </div>
           </div>
-          <Table dataSource={reportData} columns={columns} />;
+
+          <h3 className="text-[1.6rem] font-inter mb-3 text-mainDark">Recent Generated Report</h3>
+<div className="hidden md:block">
+<Table dataSource={reportData} columns={columns} />;
+</div>
+
+          <div className="flex flex-col h-[52vh] gap-3 md:hidden overflow-y-auto ">
+
+         
+          {reportData.map((item)=>{
+            return <div className="flex items-center justify-between bg-[#8f9bb4] w-full px-3 rounded-md py-3">
+             <div className="">
+             <h1 className="text-[1.6rem] font-roboto">{item.clientName}</h1>
+             <h5>{item.grade}</h5>
+             </div>
+             <h4>{item.date.split("T")[0]}</h4>
+             <div className="">
+             <div className="flex items-center gap-4">
+    <button
+      onClick={() => EditReport(item)}
+      className="w-[30px] h-[30px] rounded-full bg-mainDark text-white text-[1.7rem] flex items-center justify-center"
+    >
+      <FiEdit />
+    </button>
+    <Popconfirm
+      title="Delete the report"
+      description="Are you sure to delete this report?"
+      onConfirm={() => Deletegrade(item._id)}
+      onCancel={cancel}
+      okText="Yes"
+      cancelText="No"
+    >
+      <button
+
+        className="w-[30px] h-[30px] rounded-full bg-red-700 text-white text-[1.7rem] flex items-center justify-center"
+      >
+        <RiDeleteBinLine />
+      </button>
+    </Popconfirm>
+  </div>
+             </div>
+
+            </div>
+          })}
+         
+          </div>
           <div className={styles.reportButon}>
             <button
               className={styles.reportBtn}

@@ -97,13 +97,13 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
                 <div className={styles.drop_down} id="drop_down">
                   <ul>
                     <li>
-                      <Link href="/UserProfile">
+                      <Link href="/Settings?pageId=1">
                         <FaUserCircle className={styles.icons_drop} />
                         Profile
                       </Link>
                     </li>
                     <li>
-                      <Link href="#">
+                      <Link href="/Settings?pageId=5">
                         <BiHelpCircle className={styles.icons_drop} />
                         Help
                       </Link>
@@ -156,13 +156,13 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
                 <div className={styles.drop_down} id="drop_down">
                   <ul>
                     <li>
-                      <Link href="/UserProfile">
+                      <Link href="/Settings?pageId=1">
                         <FaUserCircle className={styles.icons_drop} />
                         Profile
                       </Link>
                     </li>
                     <li>
-                      <Link href="#">
+                      <Link href="/Settings?pageId=5">
                         <BiHelpCircle className={styles.icons_drop} />
                         Help
                       </Link>

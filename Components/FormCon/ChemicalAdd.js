@@ -77,7 +77,7 @@ if(response.status==200){
         chemical: [],
       });
     }
-  }, [isEditGrade]);
+  }, [isEditGrade,EditGradeData]);
   return (
     <div className="px-2">
       <h2 className="text-[1.8rem]">Add Grade Chemical</h2>
