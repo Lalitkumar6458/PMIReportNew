@@ -9,6 +9,7 @@ import { RiFolderShield2Line } from "react-icons/ri";
   MdOutlineLogout,
   MdOutlineCategory
 } from "react-icons/md";
+import { HiUserGroup } from 'react-icons/hi2';
 import { CgProfile } from "react-icons/cg";
 import { BiMessageSquareDots } from "react-icons/bi";
 import { useRouter } from "next/router";
@@ -34,10 +35,10 @@ const Mobile_Tabs = () => {
         },
         {
           id: 3,
-          name: "Category",
+          name: "Client",
           link: "/Category",
           icon: (
-            <MdOutlineCategory className="icon_tab" />
+            <HiUserGroup className="icon_tab" />
           ),
         },
         {

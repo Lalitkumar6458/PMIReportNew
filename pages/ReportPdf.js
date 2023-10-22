@@ -9,7 +9,7 @@ import {
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { AiFillPrinter, AiOutlineDelete, AiOutlineSend } from "react-icons/ai";
 import css from "../styles/ReportPage.module.css"
-import formate1 from "../public/Images/ReportFormate/formate1.png"
+
 import Image from 'next/image';
 import {
   Button,
