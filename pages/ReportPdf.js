@@ -129,7 +129,7 @@ const [LatterPadNo, setLatterPadNo] = useState();
  };
 
 
-const fileName = `${reportSetData.clientName}_${reportSetData.grade}_${reportSetData.date.split('T')[0].replaceAll('-','')}`;
+const fileName = `${reportSetData?.clientName}_${reportSetData?.grade}_${reportSetData?.date?.split('T')[0].replaceAll('-','')}`;
   function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

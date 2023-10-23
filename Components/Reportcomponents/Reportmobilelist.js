@@ -1,6 +1,10 @@
 import React,{useState } from 'react'
 import css from "../../styles/ReportPage.module.css"
-import { DoubleRightOutlined,PlusCircleOutlined } from '@ant-design/icons';
+import {
+  DoubleRightOutlined,
+  PlusCircleOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 import Router from 'next/router';
 import {
   
@@ -8,6 +12,7 @@ import {
     Button,
     Modal,
     Form,
+    Popconfirm,
    
   } from "antd";
   import RandomGradeData from '../SmallComponets/RandomGradeData';
@@ -346,13 +351,25 @@ const DeleteReportData=()=>{
             </div>
             <Form.Item>
               <div className="flex items-center justify-center gap-3 mt-4">
-                <button
-                onClick={DeleteReportData}
-                  className="bg-red-800 text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
-                  type="button"
+                <Popconfirm
+                  title={"Delete the Row"}
+                  description="Are you sure to delete this row?"
+                  onConfirm={DeleteReportData}
+                  icon={
+                    <QuestionCircleOutlined
+                      style={{
+                        color: "red",
+                      }}
+                    />
+                  }
                 >
-                  Delete
-                </button>
+                  <button
+                    className="bg-red-800 text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </Popconfirm>
                 <button
                   onClick={() => setModal2Open(false)}
                   type="button"

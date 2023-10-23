@@ -498,3 +498,6 @@ color: #000000;
 .ConfirmModal .ant-modal-body{
   padding: 10px;
 }
+.cunfirmModal .ant-modal-confirm-body-wrapper{
+  padding: 10px !important;
+}
