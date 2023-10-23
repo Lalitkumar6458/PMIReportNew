@@ -90,8 +90,8 @@ const getUserLogin=async()=>{
     });
 }
 const intialValue = {
-  Chemicallen: 0,
-  ClientData: 0,
+  ChemicalLen: 0,
+  ReportLen: 0,
   ClientLen: 0,
 };
     const [reportData, setReportData] = useState([]);
@@ -238,7 +238,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.dash_count}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{DashboardData.ClientLen}</h4>
+                    <h4>{DashboardData?.ClientLen}</h4>
                     <h5>Client</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -266,7 +266,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.das1}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{DashboardData.ChemicalLen}</h4>
+                    <h4>{DashboardData?.ChemicalLen}</h4>
                     <h5>Grades</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -292,7 +292,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das2}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{DashboardData.ReportLen}</h4>
+                    <h4>{DashboardData?.ReportLen}</h4>
                     <h5>Month Report </h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -320,7 +320,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das3}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{DashboardData.ReportLen}</h4>
+                    <h4>{DashboardData?.ReportLen}</h4>
 
                     <h5>Today Report</h5>
                   </div>
