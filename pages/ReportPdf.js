@@ -59,7 +59,7 @@ const[latterPadData,setLatterPadData]=useState({})
 const[withLatter,setWithLatterPad]=useState(false)
 const [islaterPadSelected, setIslaterPadSelected] = useState(false);
 
-const[pdfurl,setPdfUrl]=useState('')
+const[pdfurl,setPdfUrl]=useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
 const [pdfReady, setPdfReady] = useState(false);
 const [LatterPadNo, setLatterPadNo] = useState();
     let UserId = "";
@@ -253,7 +253,7 @@ const sendReport=async()=>{
     .then((blob) => blobToBase64(blob))
     .then((base64String) => {
       // console.log(base64String,"base64");
-      setPdfUrl(base64String)
+      setPdfUrl("data:application/pdf;base64,"+base64String)
       console.log(base64String, "base64String");
       // Use the base64 string as needed
     })
@@ -298,7 +298,7 @@ const docs=[{uri:"data:application/pdf;base64,"+pdfurl}]
               />
             </PDFViewer>{" "}
             <DocViewer
-            documents={[{uri:"data:application/pdf;base64,"+pdfurl,fileName:fileName}]}
+            documents={[{uri:pdfurl,fileName:fileName}]}
             pluginRenderers={DocViewerRenderers}
           />
             {/* {instance.loading ? (
