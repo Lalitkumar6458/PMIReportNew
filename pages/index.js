@@ -90,6 +90,8 @@ const getUserLogin=async()=>{
     });
 }
     const [reportData, setReportData] = useState([]);
+    const [dashboardData, setDashboardData] = useState({});
+
 const getReportCreatedData = async () => {
   messageAlert("loading", "Geting Client Data...");
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -115,6 +117,29 @@ const getReportCreatedData = async () => {
       console.log(error, "error");
       messageAlert("error", error.message);
     });
+    await axios
+    .get(`${ApiEndPoint}sendreport/`, { params: data_obj })
+    .then((response) => {
+      console.log("response 7h dashboard", response);
+      if (response.status == 200) {
+        setDashboardData(response.data);
+        messageAlert("success", "Succesfully Get all Home data");
+      } else if (response.status == 201) {
+        setDashboardData(response.data);
+        messageAlert("success", "Data Not Found");
+      }
+    })
+    .catch((error) => {
+      // dispatch({
+      //   type: ERROR_FINDING_USER
+      // })
+      console.log(error, "error");
+      messageAlert("error", error.message);
+    });
+
+
+
+
 };
   const Deletegrade = async (id) => {
     messageAlert("loading", "Deleting Grade...");
@@ -231,7 +256,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.dash_count}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashBoardData.client_count}</h4>
+                    <h4>{dashboardData.Client}</h4>
                     <h5>Client</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -259,7 +284,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.das1}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashBoardData.grade_count}</h4>
+                    <h4>{dashboardData.Chemical}</h4>
                     <h5>Grades</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -285,7 +310,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das2}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashBoardData.monthly_count}</h4>
+                    <h4>{dashboardData.ReportMonth}</h4>
                     <h5>Month Report </h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -313,7 +338,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das3}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashBoardData.today_report_count}</h4>
+                    <h4>{dashboardData.ReportToday}</h4>
 
                     <h5>Today Report</h5>
                   </div>

@@ -298,6 +298,9 @@ margin: 0px;
     .infoCon h4{
         font-size: 1.1rem;
     }
+    .bottomtextBox{
+        margin-top: 8px;
+    }
 }
 
 
@@ -334,5 +337,26 @@ margin: 0px;
     }
     .rowlatter{
         gap: 20px;
+    }
+    .nameBox3 h2{
+       
+    font-size: 24px;
+   
+    padding: 0 15px;
+    }
+    .alloytext h3{
+    font-size: 9px;
+    }
+    .PmiText h1{
+        font-size: 9.757px;
+    }
+    .infoBoxCont h2{
+        font-size: 9px;
+    }
+    .endbox{
+        margin-top: 5px;
+    }
+    .FirstLine p{
+        font-size: 5px;
     }
 }
