@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import {Popconfirm, Table, message} from "antd"
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBinLine } from "react-icons/ri";
-export default function Home({ dashBoardData }) {
+export default function Home() {
         
   const { data: session, status } = useSession();
   function handleSignOut() {
@@ -19,7 +19,7 @@ export default function Home({ dashBoardData }) {
   }
 
   return (
-   <div>{session ? User({ session, handleSignOut, dashBoardData }) : Guest()}</div>
+   <div>{session ? User({ session, handleSignOut }) : Guest()}</div>
   );
 }
 // Guest
@@ -42,7 +42,7 @@ Router.push("/login");
   );
 }
 
-function User({ session, handleSignOut,dashBoardData }) {
+function User({ session, handleSignOut }) {
     const [messageApi, contextHolder] = message.useMessage();
 
    function messageAlert(type, content) {
@@ -89,9 +89,13 @@ const getUserLogin=async()=>{
       // messageAlert("error", error.message);
     });
 }
+const intialValue = {
+  ChemicalLen: 0,
+  ReportLen: 0,
+  ClientLen: 0,
+};
     const [reportData, setReportData] = useState([]);
-    const [dashboardData, setDashboardData] = useState({});
-
+    const [DashboardData, setDashboardData] = useState(intialValue);
 const getReportCreatedData = async () => {
   messageAlert("loading", "Geting Client Data...");
   axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -104,6 +108,7 @@ const getReportCreatedData = async () => {
       console.log("response 7h dashboard", response);
       if (response.status == 200) {
         setReportData(response.data.data);
+        setDashboardData(response.data.dashbordData);
         messageAlert("success", "Succesfully Get all client data");
       } else if (response.status == 201) {
         setReportData(response.data.data);
@@ -256,7 +261,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.dash_count}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashboardData.Client}</h4>
+                    <h4>{DashboardData?.ClientLen}</h4>
                     <h5>Client</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -284,7 +289,7 @@ return (
               >
                 <div className={`${styles.dash_count} ${styles.das1}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashboardData.Chemical}</h4>
+                    <h4>{DashboardData?.ChemicalLen}</h4>
                     <h5>Grades</h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -310,7 +315,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das2}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashboardData.ReportMonth}</h4>
+                    <h4>{DashboardData?.ReportLen}</h4>
                     <h5>Month Report </h5>
                   </div>
                   <div className={styles.dash_imgs}>
@@ -338,7 +343,7 @@ return (
               <div className="col-lg-3 col-sm-6 col-6 d-flex">
                 <div className={`${styles.dash_count} ${styles.das3}`}>
                   <div className={styles.dash_counts}>
-                    <h4>{dashboardData.ReportToday}</h4>
+                    <h4>{DashboardData?.ReportLen}</h4>
 
                     <h5>Today Report</h5>
                   </div>
@@ -364,61 +369,61 @@ return (
             </div>
           </div>
 
-          <h3 className="text-[1.6rem] font-inter mb-3 text-mainDark">Recent Generated Report</h3>
-<div className="hidden md:block">
-<Table dataSource={reportData} columns={columns} />;
-</div>
+          <h3 className="text-[1.6rem] font-inter mb-3 text-mainDark">
+            Recent Generated Report
+          </h3>
+          <div className="hidden md:block">
+            <Table dataSource={reportData} columns={columns} />;
+          </div>
 
           <div className="flex flex-col h-[52vh] gap-3 md:hidden overflow-y-auto ">
-
-         
-          {reportData.map((item)=>{
-            return <div className="flex items-center justify-between bg-[#8f9bb4] w-full px-3 rounded-md py-3">
-             <div className="">
-             <h1 className="text-[1.6rem] font-roboto">{item.clientName}</h1>
-             <h5>{item.grade}</h5>
-             </div>
-             <h4>{item.date.split("T")[0]}</h4>
-             <div className="">
-             <div className="flex items-center gap-4">
-    <button
-      onClick={() => EditReport(item)}
-      className="w-[30px] h-[30px] rounded-full bg-mainDark text-white text-[1.7rem] flex items-center justify-center"
-    >
-      <FiEdit />
-    </button>
-    <Popconfirm
-      title="Delete the report"
-      description="Are you sure to delete this report?"
-      onConfirm={() => Deletegrade(item._id)}
-      onCancel={cancel}
-      okText="Yes"
-      cancelText="No"
-    >
-      <button
-
-        className="w-[30px] h-[30px] rounded-full bg-red-700 text-white text-[1.7rem] flex items-center justify-center"
-      >
-        <RiDeleteBinLine />
-      </button>
-    </Popconfirm>
-  </div>
-             </div>
-
-            </div>
-          })}
-         
+            {reportData.map((item) => {
+              return (
+                <div className="flex items-center justify-between bg-[#8f9bb4] w-full px-3 rounded-md py-3">
+                  <div className="">
+                    <h1 className="text-[1.6rem] font-roboto">
+                      {item.clientName}
+                    </h1>
+                    <h5>{item.grade}</h5>
+                  </div>
+                  <h4>{item.date.split("T")[0]}</h4>
+                  <div className="">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={() => EditReport(item)}
+                        className="w-[30px] h-[30px] rounded-full bg-mainDark text-white text-[1.7rem] flex items-center justify-center"
+                      >
+                        <FiEdit />
+                      </button>
+                      <Popconfirm
+                        title="Delete the report"
+                        description="Are you sure to delete this report?"
+                        onConfirm={() => Deletegrade(item._id)}
+                        onCancel={cancel}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <button className="w-[30px] h-[30px] rounded-full bg-red-700 text-white text-[1.7rem] flex items-center justify-center">
+                          <RiDeleteBinLine />
+                        </button>
+                      </Popconfirm>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div className={styles.reportButon}>
             <button
               className={styles.reportBtn}
               shape="round"
-              onClick={() =>{
+              onClick={() => {
                 localStorage.removeItem("reportAddedData");
                 localStorage.removeItem("EditReportData");
-                localStorage.removeItem("ReportCreatedData")
+                localStorage.removeItem("ReportCreatedData");
 
-                Router.push("/Report")}}
+                Router.push("/Report");
+              }}
             >
               <FileAddOutlined />{" "}
               <span className={styles.reportText}>Report</span>
@@ -434,9 +439,7 @@ export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
 
   try{
-   const  resData = await axios.get(`${ApiEndPoint}dashboard_info/`, {
-      params: { userEmail: session?.user?.email },
-    });
+
     if (!session) {
       return {
         redirect: {
@@ -449,7 +452,6 @@ export async function getServerSideProps({ req }) {
     return {
       props: {
         session,
-        dashBoardData: resData.data,
       },
     };
 
@@ -458,7 +460,6 @@ export async function getServerSideProps({ req }) {
     return {
       props: {
         session,
-        dashBoardData: {},
       },
     };
   }

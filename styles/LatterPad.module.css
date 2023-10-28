@@ -313,7 +313,7 @@ margin: 0px;
         height: 156px;
     }
     .FirstLine p{
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
     .textname h2{
         font-size: 1.9rem;
@@ -339,24 +339,21 @@ margin: 0px;
         gap: 20px;
     }
     .nameBox3 h2{
-       
-    font-size: 24px;
-   
-    padding: 0 15px;
+        font-size: 22px;
     }
     .alloytext h3{
-    font-size: 9px;
+        font-size: 8px;
     }
     .PmiText h1{
-        font-size: 9.757px;
+        font-size: 9.5px;
     }
     .infoBoxCont h2{
-        font-size: 9px;
+        font-size: 8.5px;
+    }
+    .bottomtextBox{
+        margin-top: 6px;
     }
     .endbox{
-        margin-top: 5px;
-    }
-    .FirstLine p{
-        font-size: 5px;
+        margin-top: 4px;
     }
 }

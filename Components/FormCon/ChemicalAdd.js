@@ -39,6 +39,7 @@ const ChemicalAdd = ({
 if(response.status==200){
     getAllChemicalData()
             setIsModalOpen(false);
+                form.resetFields();
 
 
 }
@@ -56,6 +57,7 @@ if(response.status==200){
           if (response.status == 200) {
             getAllChemicalData();
             setIsModalOpen(false)
+            form.resetFields();
           }
         })
         .catch((error) => {
@@ -182,7 +184,7 @@ if(response.status==200){
               className="bg-mainDark text-white rounded h-[40px] px-3 font-poppins text-[1.4rem]"
               type="sumbit"
             >
-              Save
+              {isEditGrade?'Update':'Save'}
             </button>
           </div>
         </Form.Item>

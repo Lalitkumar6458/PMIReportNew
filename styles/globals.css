@@ -498,10 +498,6 @@ color: #000000;
 .ConfirmModal .ant-modal-body{
   padding: 10px;
 }
-.UploadImages{
-width: 100% !important;
-}
-.UploadImages .ant-upload{
-width: 100% !important;
-height: 112px !important;
+.cunfirmModal .ant-modal-confirm-body-wrapper{
+  padding: 10px !important;
 }

@@ -26,6 +26,7 @@ import {
   Select,
   Input,
   Button,
+  Modal,
   Dropdown,
   Form,
   Divider,
@@ -40,13 +41,8 @@ import { getSession, useSession, signOut } from "next-auth/react"
 import axios from "axios";
 
 const Report = ({ reportData,session }) => {
-  console.log(reportData, "reportData")
   const router = useRouter();
-
-
   var EditData = JSON.parse(localStorage.getItem("EditReportData"));
-  console.log(EditData, "getData edit");
-
   const [allReportdata, setAllReportData] = useState({});
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
@@ -55,6 +51,7 @@ const Report = ({ reportData,session }) => {
   const [SelecteGradeData, setSelecteGradeData] = useState({});
   const [AgencyUser, setAgencyUser] = useState('');
 const [clientSelected,setClientSelected]=useState('')
+const [isFormDirty, setIsFormDirty] = useState(false);
     const [form] = Form.useForm();
        let UserId = "";
        let token;
@@ -62,6 +59,25 @@ const [clientSelected,setClientSelected]=useState('')
          UserId = localStorage.getItem("UserId");
          token = localStorage.getItem("token");
        }
+         const showDiscardConfirmation = () => {
+           if (isFormDirty) {
+             Modal.confirm({
+               title: "Discard Report Changes",
+               className: "ConfirmModal",
+               centered:true,
+               content: "Are you sure you want to discard the report changes?",
+               onOk: () => {
+                 form.resetFields(); // Reset the form
+                 setIsFormDirty(false);
+                 // Reset the form dirty state
+                 router.push("/");
+               },
+             });
+           } else {
+             form.resetFields(); 
+              router.push("/");// If the form is not dirty, simply reset the form
+           }
+         };
 
   const onFinish = (values) => {
      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -77,19 +93,16 @@ const data = {
   chemical: SelecteGradeData?.chemical,
 };
 
-console.log("data", data);
+setIsFormDirty(false);
 if (EditData){
   
   data["id"] = EditData._id
-  console.log("data edit", data);
  axios
    .put(ApiEndPoint + "report", data)
    .then((response) => {
      // Handle the response from the backend
-     console.log("response", response);
      if (response.status == 200) {
        const Data = response.data.data;
-       console.log(Data, "resposr data");
        var url = "/ReportPdf";
        localStorage.setItem("ReportCreatedData", JSON.stringify(Data));
        Router.push(
@@ -108,12 +121,10 @@ if (EditData){
     .post(ApiEndPoint + "report", data)
     .then((response) => {
       // Handle the response from the backend
-      console.log("response", response);
       if (response.status == 200) {
         //  getAllChemicalData();
         //  setIsModalOpen(false);
         const Data = response.data.data;
-        console.log(Data, "resposr data");
         var url = "/ReportPdf";
         localStorage.setItem("ReportCreatedData", JSON.stringify(Data._doc));
         Router.push(
@@ -337,11 +348,9 @@ return a[2]+"-"+a[1]+"-"+a[0]
          agencyName: getAllData?.UserData?.name,
        });
     }
-console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
   }, [getAllData]);
 
 
-  console.log("todayData formfdjvh", todayData);
   return (
     <>
       <Layout title="Report">
@@ -350,6 +359,7 @@ console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
           form={form}
           name="control-hooks"
           onFinish={onFinish}
+          onValuesChange={() => setIsFormDirty(true)}
           initialValues={{
             date: dayjs(todayData, "DD-MM-YYYY"),
             agencyName: AgencyUser,
@@ -757,6 +767,7 @@ console.log("etAllData?.UserData?.name", getAllData?.UserData?.name);
             <div className="flex items-center justify-center gap-3 mt-4">
               <button
                 type="button"
+                onClick={showDiscardConfirmation}
                 className="rounded h-[40px] px-3 font-poppins text-[1.4rem] border border-mainDark"
               >
                 Cancel

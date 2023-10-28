@@ -68,6 +68,8 @@ const ClientTable = ({ dataObj, messageAlert, GetclientData }) => {
     setEditingKey("");
   };
   useEffect(() => {
+    const newData = dataObj.map((x)=>x['key']=x._id)
+console.log(newData, "newData");
     setData(dataObj);
   }, [dataObj]);
   const userInfo = useSession();
@@ -147,24 +149,28 @@ const ClientTable = ({ dataObj, messageAlert, GetclientData }) => {
     {
       title: "Client Name",
       dataIndex: "name",
+      key: "name",
       width: "20%",
       editable: true,
     },
     {
       title: "Email",
       dataIndex: "email",
+      key: "email",
       width: "20%",
       editable: true,
     },
     {
       title: "Phone No.",
       dataIndex: "phoneNo",
+      key: "phoneNo",
       width: "20%",
       editable: true,
     },
     {
       title: "Address",
       dataIndex: "address",
+      key: "address",
       width: "30%",
       editable: true,
     },
@@ -172,6 +178,7 @@ const ClientTable = ({ dataObj, messageAlert, GetclientData }) => {
       title: "Action",
       dataIndex: "operation",
       render: (_, record) => {
+        console.log(record,'record')
         const editable = isEditing(record);
         return (
           <div className={styles.buttonbox}>
@@ -204,9 +211,7 @@ const ClientTable = ({ dataObj, messageAlert, GetclientData }) => {
                   description="Are you sure to delete this item?"
                   onConfirm={() => DeleteClient(record)}
                 >
-                  
-                    <DeleteOutlined className={styles.icon_del} />
-                  
+                  <DeleteOutlined className={styles.icon_del} />
                 </Popconfirm>
               ) : null}
             </span>

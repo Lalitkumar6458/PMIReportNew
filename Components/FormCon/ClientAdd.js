@@ -71,6 +71,7 @@ const ClientAdd = ({ setIsModalOpen, GetclientData }) => {
           //    getAllChemicalData();
           setIsModalOpen(false);
           GetclientData()
+               form.resetFields();
         }
       })
       .catch((error) => {

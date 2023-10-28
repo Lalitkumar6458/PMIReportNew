@@ -80,6 +80,7 @@ const Signup = (props) => {
       response.data.message,
       "error"
     );
+     Router.push("/login");
             }
             else {
              openNotification(
