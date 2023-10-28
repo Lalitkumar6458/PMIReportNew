@@ -30,7 +30,7 @@ import { useRouter } from 'next/router';
 import { MdFileDownload } from 'react-icons/md';
 import { FiEdit } from 'react-icons/fi';
 import { RiPagesLine } from 'react-icons/ri';
-
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 const { confirm } = Modal;
 const ReportPdf = () => {
 
@@ -231,6 +231,7 @@ useEffect(() => {
   GetLatterpadData();
 }, []);
 
+
 //  const [instance, updateInstance] = usePDF({
 //    document: (
 //      <MyDocument
@@ -242,8 +243,8 @@ useEffect(() => {
 //      />
 //    ),
 //  });
-//  console.log(instance, "instance");
-
+//  console.log(instance.url, "instance");
+const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
 const sendReport=async()=>{
   const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
   console.log(blobURL, "blobURL");
@@ -260,25 +261,27 @@ const sendReport=async()=>{
       console.error(error);
     });
 
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  const data = {
-    pdfurl: pdfurl,
-    userId: UserId,
-  };
-  axios
-    .post(ApiEndPoint + "sendreport", data)
-    .then((response) => {
-      // Handle the response from the backend
-      console.log("response",response);
-      if (response.status == 200) {
-   alert("send email")
-      }
-    })
-    .catch((error) => {
-      console.log("error", error);
-      // Handle any errors or unauthorized access
-    });
+  // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  // const data = {
+  //   pdfurl: pdfurl,
+  //   userId: UserId,
+  // };
+  // axios
+  //   .post(ApiEndPoint + "sendreport", data)
+  //   .then((response) => {
+  //     // Handle the response from the backend
+  //     console.log("response",response);
+  //     if (response.status == 200) {
+  //  alert("send email")
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log("error", error);
+  //     // Handle any errors or unauthorized access
+  //   });
 }
+
+const docs=[{uri:"data:application/pdf;base64,"+pdfurl}]
   return (
     <>
       <Layout title={"Report-Pdf"}>
@@ -294,6 +297,10 @@ const sendReport=async()=>{
                 latterPadNo={LatterPadNo}
               />
             </PDFViewer>{" "}
+            <DocViewer
+            documents={[{uri:"data:application/pdf;base64,"+pdfurl,fileName:fileName}]}
+            pluginRenderers={DocViewerRenderers}
+          />
             {/* {instance.loading ? (
               <h1>Loading pdf...</h1>
             ) : (

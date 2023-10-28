@@ -437,7 +437,8 @@ return (
 
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
-
+  console.log(process.env.API_ENDPOINT,"env file end point")
+  const API_END_Point=process.env.API_ENDPOINT
   try{
 
     if (!session) {
