@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.0.0",
+    "@cyntler/react-doc-viewer": "^1.14.0",
     "@next/font": "13.1.6",
     "@react-pdf/renderer": "^3.1.11",
     "antd": "^5.2.0",

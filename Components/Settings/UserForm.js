@@ -1,7 +1,25 @@
-import React from 'react'
-import { Button, Form, Input, Select } from "antd";
+import React, { useState } from 'react'
+import { Button, Form, Input, Select,Upload } from "antd";
 import axios from 'axios';
 import { ApiEndPoint } from '@/public/ApiEndPoint';
+import { PlusOutlined,LoadingOutlined  } from '@ant-design/icons';
+
+const getBase64 = (img, callback) => {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result));
+  reader.readAsDataURL(img);
+};
+const beforeUpload = (file) => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
 const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
   let UserId = "";
   let token;
@@ -9,11 +27,19 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
     UserId = localStorage.getItem("UserId");
     token = localStorage.getItem("token");
   }
+  const[fileObj,setFileObj]=useState()
+  const [loading, setLoading] = useState(false);
+
+  const [imageUrl, setImageUrl] = useState();
+  const [imageSignUrl, setImageSignUrl] = useState();
+
   const [form] = Form.useForm();
   const onFinish = (values) => {
     console.log(values);
     const data = {
       ...values,
+      stampImg:imageUrl,
+      signImg:imageSignUrl,
       id: UserId,
     };
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -38,6 +64,37 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
   form.setFieldsValue({
     ...userData,
   });
+  
+  const handleChange = (info) => {
+    setFileObj(info)
+        getBase64(info.file.originFileObj, (url) => {
+        setLoading(false);
+        setImageUrl(url);
+        localStorage.setItem("base64Img",url)
+      });
+
+  };
+  const handleSignChange = (info) => {
+    setFileObj(info)
+        getBase64(info.file.originFileObj, (url) => {
+        setLoading(false);
+        setImageSignUrl(url);
+        localStorage.setItem("base64Img",url)
+      });
+
+  };
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div
+        style={{
+          marginTop: 8,
+        }}
+      >
+        Upload
+      </div>
+    </div>
+  );
   return (
     <div>
       <h3 className="text-center">Edit Your Info</h3>
@@ -94,7 +151,55 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             <Input placeholder="Enter Company Name" size="large" />
           </Form.Item>
         </div>
+<div className='grid grid-cols-2 gap-3'>
+<div className="">
+<label className="text-[18px] font-medium">Stamp Image</label>
+<Upload
+name="avatar"
+listType="picture-card"
+className="avatar-uploader UploadImages"
+showUploadList={false}
+beforeUpload={beforeUpload}
+onChange={handleChange}
+>
+{imageUrl ? (
+  <img
+    src={imageUrl}
+    alt="avatar"
+    style={{
+      width: '100%',
+    }}
+  />
+) : (
+  uploadButton
+)}
+</Upload>
+</div>
+<div className="">
+<label className="text-[18px] font-medium">Sign Image</label>
+<Upload
+name="avatar"
 
+listType="picture-card"
+className="avatar-uploader UploadImages"
+showUploadList={false}
+beforeUpload={beforeUpload}
+onChange={handleSignChange}
+>
+{imageSignUrl ? (
+  <img
+    src={imageSignUrl}
+    alt="avatar"
+    style={{
+      width: '100%',
+    }}
+  />
+) : (
+  uploadButton
+)}
+</Upload>
+</div>
+</div>
         <Form.Item>
           <div className="flex items-center justify-center gap-3 mt-4">
             <button
@@ -112,6 +217,7 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             </button>
           </div>
         </Form.Item>
+       
       </Form>
     </div>
   );

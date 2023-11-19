@@ -6,8 +6,9 @@ import {
   usePDF,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
+import {LuView} from "react-icons/lu"
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { AiFillPrinter, AiOutlineDelete, AiOutlineSend } from "react-icons/ai";
+import { AiFillPrinter, AiOutlineDelete, AiOutlineSend,AiOutlineClose } from "react-icons/ai";
 import css from "../styles/ReportPage.module.css"
 
 import Image from 'next/image';
@@ -30,7 +31,7 @@ import { useRouter } from 'next/router';
 import { MdFileDownload } from 'react-icons/md';
 import { FiEdit } from 'react-icons/fi';
 import { RiPagesLine } from 'react-icons/ri';
-
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 const { confirm } = Modal;
 const ReportPdf = () => {
 
@@ -58,8 +59,8 @@ const[latterPadData,setLatterPadData]=useState({})
  const reportSetData = JSON.parse(localStorage.getItem("ReportCreatedData"));
 const[withLatter,setWithLatterPad]=useState(false)
 const [islaterPadSelected, setIslaterPadSelected] = useState(false);
-
-const[pdfurl,setPdfUrl]=useState('')
+const [openViewReport,setOpenViewReport]=useState(false)
+const[pdfurl,setPdfUrl]=useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')
 const [pdfReady, setPdfReady] = useState(false);
 const [LatterPadNo, setLatterPadNo] = useState();
     let UserId = "";
@@ -229,7 +230,10 @@ const GetLatterpadData = async () => {
 };
 useEffect(() => {
   GetLatterpadData();
+  const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
+  console.log(blobURL,"blobURL")
 }, []);
+
 
 //  const [instance, updateInstance] = usePDF({
 //    document: (
@@ -242,8 +246,8 @@ useEffect(() => {
 //      />
 //    ),
 //  });
-//  console.log(instance, "instance");
-
+//  console.log(instance.url, "instance");
+const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
 const sendReport=async()=>{
   const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
   console.log(blobURL, "blobURL");
@@ -252,7 +256,7 @@ const sendReport=async()=>{
     .then((blob) => blobToBase64(blob))
     .then((base64String) => {
       // console.log(base64String,"base64");
-      setPdfUrl(base64String)
+      setPdfUrl("data:application/pdf;base64,"+base64String)
       console.log(base64String, "base64String");
       // Use the base64 string as needed
     })
@@ -260,31 +264,52 @@ const sendReport=async()=>{
       console.error(error);
     });
 
-  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  const data = {
-    pdfurl: pdfurl,
-    userId: UserId,
-  };
-  axios
-    .post(ApiEndPoint + "sendreport", data)
-    .then((response) => {
-      // Handle the response from the backend
-      console.log("response",response);
-      if (response.status == 200) {
-   alert("send email")
-      }
+  // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  // const data = {
+  //   pdfurl: pdfurl,
+  //   userId: UserId,
+  // };
+  // axios
+  //   .post(ApiEndPoint + "sendreport", data)
+  //   .then((response) => {
+  //     // Handle the response from the backend
+  //     console.log("response",response);
+  //     if (response.status == 200) {
+  //  alert("send email")
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     console.log("error", error);
+  //     // Handle any errors or unauthorized access
+  //   });
+}
+
+const docs=[{uri:"data:application/pdf;base64,"+pdfurl}]
+const ViewReport=()=>{
+
+
+  const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
+  console.log(blobURL, "blobURL");
+  fetch(blobURL)
+    .then((response) => response.blob())
+    .then((blob) => blobToBase64(blob))
+    .then((base64String) => {
+      // console.log(base64String,"base64");
+      setPdfUrl("data:application/pdf;base64,"+base64String)
+      console.log(base64String, "base64String");
+      // Use the base64 string as needed
     })
     .catch((error) => {
-      console.log("error", error);
-      // Handle any errors or unauthorized access
+      console.error(error);
     });
+    setOpenViewReport(true)
 }
+
   return (
-    <>
       <Layout title={"Report-Pdf"}>
         {contextHolder}
         <div className="grid lg:grid-flow-col grid-cols-1 lg:grid-cols-4 w-full gap-3">
-          <div className="w-full lg:col-span-3" id="pdfViewerContainer">
+          <div className="w-full lg:col-span-3 hidden md:block" id="pdfViewerContainer">
             <PDFViewer width={"100%"} height={600} showToolbar={true}>
               <MyDocument
                 formateNo={formateNo}
@@ -294,6 +319,7 @@ const sendReport=async()=>{
                 latterPadNo={LatterPadNo}
               />
             </PDFViewer>{" "}
+     
             {/* {instance.loading ? (
               <h1>Loading pdf...</h1>
             ) : (
@@ -306,7 +332,7 @@ const sendReport=async()=>{
             )}
             <iframe src={instance.url} width={'100%'} height={600}></iframe> */}
           </div>
-          <div className=" w-full">
+          <div className=" w-full mt-[40px] md:mt-[0px] ">
             <div className="flex items-center gap-2 justify-center mb-14">
               <Radio.Group onChange={onChange} value={value}>
                 <Space direction="vertical">
@@ -370,6 +396,13 @@ const sendReport=async()=>{
               ) : null}
             </div>
             <div className="w-full flex flex-col px-5 gap-8">
+            <button
+            onClick={ViewReport}
+            className="h-[40px]   md:hidden w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer flex items-center justify-center gap-4 text-[1.8rem]"
+          >
+            <LuView />
+            View Report
+          </button> 
               <PDFDownloadLink
                 className=""
                 style={{ textDecoration: "none" }}
@@ -387,27 +420,22 @@ const sendReport=async()=>{
                   loading ? (
                     "Loading document..."
                   ) : (
-                    <>
-                      <button className="h-[40px] w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer flex items-center justify-center gap-4 text-[1.8rem]">
-                        <MdFileDownload />
-                        Donwload
-                      </button>
-                      <input type="hidden" id="pdfUrl" value={url} />
-                    </>
+                   <div >
+                   <button className="h-[40px] w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer flex items-center justify-center gap-4 text-[1.8rem]">
+                     <MdFileDownload />
+                     Donwload
+                   </button>
+                   <input type="hidden" id="pdfUrl" value={url} />
+                   </div>
+                   
                   )
                 }
               </PDFDownloadLink>
 
-              {/* <button
-                onClick={openPrintDialog}
-                className="h-[40px] w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer flex items-center justify-center gap-4 text-[1.8rem]"
-              >
-                <AiFillPrinter />
-                Print
-              </button> */}
+         
               <button
                 onClick={sendReport}
-                className="h-[40px] w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer flex items-center justify-center gap-4 text-[1.8rem]"
+                className="h-[40px] hidden w-full bg-mainDark font-inter text-white border-0 rounded-md cursor-pointer  items-center justify-center gap-4 text-[1.8rem]"
               >
                 <AiOutlineSend />
                 Send
@@ -429,11 +457,27 @@ const sendReport=async()=>{
             </div>
           </div>
         </div>
-        <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-          {/* <Image src={imagename} alt="formate" className={css.imageFormate} /> */}
-        </Modal>
+   
+        <Modal
+        className="p-3 relative"
+        title={null}
+        centered
+        open={openViewReport}
+        onOk={() => setOpenViewReport(false)}
+        onCancel={() => setOpenViewReport(false)}
+        width={"98%"}
+      >
+      <div className=" text-[20px] pl-5 pt-3 cursor-pointer" onClick={()=>setOpenViewReport(false)}>
+      <AiOutlineClose/>
+      </div>
+      <DocViewer
+      style={{ width: "100%", height: 500 }}
+      documents={[{uri:pdfurl,fileName:fileName}]}
+      pluginRenderers={DocViewerRenderers}
+    />
+      </Modal>
       </Layout>
-    </>
+ 
   );
 }
 

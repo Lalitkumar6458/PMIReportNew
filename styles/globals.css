@@ -501,3 +501,9 @@ color: #000000;
 .cunfirmModal .ant-modal-confirm-body-wrapper{
   padding: 10px !important;
 }
+.react-pdf__Page__textContent,.react-pdf__Page__annotations{
+  display: none !important;
+}
+.react-pdf__Page__canvas{
+  width: 100% !important;
+}

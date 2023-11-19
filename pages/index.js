@@ -122,6 +122,29 @@ const getReportCreatedData = async () => {
       console.log(error, "error");
       messageAlert("error", error.message);
     });
+    await axios
+    .get(`${ApiEndPoint}sendreport/`, { params: data_obj })
+    .then((response) => {
+      console.log("response 7h dashboard", response);
+      if (response.status == 200) {
+        setDashboardData(response.data);
+        messageAlert("success", "Succesfully Get all Home data");
+      } else if (response.status == 201) {
+        setDashboardData(response.data);
+        messageAlert("success", "Data Not Found");
+      }
+    })
+    .catch((error) => {
+      // dispatch({
+      //   type: ERROR_FINDING_USER
+      // })
+      console.log(error, "error");
+      messageAlert("error", error.message);
+    });
+
+
+
+
 };
   const Deletegrade = async (id) => {
     messageAlert("loading", "Deleting Grade...");
@@ -414,8 +437,8 @@ return (
 
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
-  console.log(session, "session dufk");
-
+  console.log(process.env.API_ENDPOINT,"env file end point")
+  const API_END_Point=process.env.API_ENDPOINT
   try{
 
     if (!session) {
