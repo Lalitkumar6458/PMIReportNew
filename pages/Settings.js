@@ -17,6 +17,7 @@ const Settings = ({session}) => {
 const [activetabkey, setActiveTabKey] = useState(
   query.pageId ? parseInt(query.pageId) : 1
 );
+
    // Access the query parameters from the URL
 
    // Now you can access individual query parameters like query.paramName

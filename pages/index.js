@@ -414,6 +414,7 @@ return (
 
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req });
+  console.log(session, "session dufk");
 
   try{
 
