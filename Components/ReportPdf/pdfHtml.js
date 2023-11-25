@@ -370,16 +370,16 @@ const pdfHtml = ({ latterPad, islaterPadSelected, formateNo, latterPadNo }) => {
    </div>
    <div class="MainInfo">
     <div class="Col_3 heigh_box borderRigth">
-    <div class="textfont">PMI REPORT NO:${ReportCreatedData.pmiReportNo} </div>
-    <div class="textfont">Purchase Order:${ReportCreatedData.poNo} </div>
+    <div class="textfont">PMI REPORT NO:${ReportCreatedData.pmiReportNo?ReportCreatedData.pmiReportNo:''} </div>
+    <div class="textfont">Purchase Order:${ReportCreatedData.poNo?ReportCreatedData.poNo:''} </div>
 <div class="textfont">Material Specification/Grade:${
       ReportCreatedData.grade
     }</div>
     </div>
     <div class="Col_6 heigh_box borderRigth">
-<div class="textfont">Party Name: ${ReportCreatedData.clientName}</div>
-<div class="textfont">Testing Agency :${ReportCreatedData.agencyName}</div>
-<div class="textfont">PMI Location: ${ReportCreatedData.location}</div>
+<div class="textfont">Party Name: ${ReportCreatedData.clientName?ReportCreatedData.clientName:''}</div>
+<div class="textfont">Testing Agency :${ReportCreatedData.agencyName?ReportCreatedData.agencyName:''}</div>
+<div class="textfont">PMI Location: ${ReportCreatedData.location?ReportCreatedData.location:''}</div>
     </div>
     <div class="Col_3 heigh_box LastCol  ">
      <div class="textfont">DATE: ${formatDate(ReportCreatedData.date)}</div>
@@ -414,8 +414,8 @@ ${reporttable(indexId)}
 <div class="leftDiv">
 <div class="TopDiv">
 <div class="InstrmentId borderRigth">
-<div >Instrument Id: ${ReportCreatedData.InstrumentId}</div>
-<div >Models No.: ${ReportCreatedData.ModalNo}</div>
+<div >Instrument Id: ${ReportCreatedData.InstrumentId?ReportCreatedData.InstrumentId:''}</div>
+<div >Models No.: ${ReportCreatedData.ModalNo?ReportCreatedData.ModalNo:''}</div>
 
 </div>
 <div class="modalNo">

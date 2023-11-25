@@ -11,7 +11,6 @@ import logo from "../public/Images/pmilogo.png"
 import axios from 'axios';
 import { Avatar, Space } from 'antd';
 import { getSession, useSession, signOut } from "next-auth/react"
-import Router from 'next/router';
 import { UserOutlined,ArrowLeftOutlined } from '@ant-design/icons';
 import UserAvatar from './SmallComponets/Avatar';
 import { useRouter } from 'next/router';
@@ -72,10 +71,10 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
           </h2>
          
         <div className={styles.right_btn_con}>
-          <span>
+          <span className='hidden'>
             <FiSearch className={styles.icon_t} />{" "}
           </span>
-          <span>
+          <span className='hidden'>
             <IoNotificationsOutline className={styles.icon_t} />
           </span>
           <div className={styles.usen_info_con}>
@@ -102,7 +101,7 @@ headingName!="DashBoard"?<ArrowLeftOutlined title='GoBack' onClick={goBack} clas
                         Profile
                       </Link>
                     </li>
-                    <li>
+                    <li className='hidden'>
                       <Link href="/Settings?pageId=5">
                         <BiHelpCircle className={styles.icons_drop} />
                         Help

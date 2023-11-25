@@ -127,14 +127,15 @@ const getReportCreatedData = async () => {
     .then((response) => {
       console.log("response 7h dashboard", response);
       if (response.status == 200) {
-        setDashboardData(response.data);
+        // setDashboardData(response.data);
         messageAlert("success", "Succesfully Get all Home data");
       } else if (response.status == 201) {
-        setDashboardData(response.data);
+        // setDashboardData(response.data);
         messageAlert("success", "Data Not Found");
       }
     })
     .catch((error) => {
+
       // dispatch({
       //   type: ERROR_FINDING_USER
       // })
@@ -249,7 +250,7 @@ return (
 
 
   return (
-    <>
+
       <Layout title="Dashboard" paddingTop="60px">
         {contextHolder}
         <div className={styles.dashboard_con}>
@@ -431,7 +432,7 @@ return (
           </div>
         </div>
       </Layout>
-    </>
+
   );
 }
 

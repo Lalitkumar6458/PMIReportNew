@@ -151,7 +151,7 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             <Input placeholder="Enter Company Name" size="large" />
           </Form.Item>
         </div>
-<div className='grid grid-cols-2 gap-3'>
+<div className='grid grid-cols-2 gap-3 hidden'>
 <div className="">
 <label className="text-[18px] font-medium">Stamp Image</label>
 <Upload

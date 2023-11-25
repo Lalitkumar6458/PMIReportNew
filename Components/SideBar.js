@@ -43,18 +43,24 @@ const SideBar = () => {
         icon: <HiUserGroup className={styles.icon} />,
       },
       {
-        id: 4,
-        name: "History",
-        link: "/History",
-        icon: <MdOutlineAnalytics className={styles.icon} />,
+        id: 3,
+        name: "Settings",
+        link: "/Settings",
+        icon: <MdOutlineSettings className={styles.icon} />,
       },
+      // {
+      //   id: 4,
+      //   name: "History",
+      //   link: "/History",
+      //   icon: <MdOutlineAnalytics className={styles.icon} />,
+      // },
 
-      {
-        id: 5,
-        name: "About",
-        link: "/About",
-        icon: <BiMessageSquareDots className={styles.icon} />,
-      },
+      // {
+      //   id: 5,
+      //   name: "About",
+      //   link: "/About",
+      //   icon: <BiMessageSquareDots className={styles.icon} />,
+      // },
     ];
 
     function handler_side_bar(){
@@ -125,8 +131,8 @@ $("#heading_img img").css({
     }
    
 </ul>
-<label>General</label>
-<ul>
+<label className='hidden'>General</label>
+<ul className='hidden'>
     <li><Link href="/"><RiFolderShield2Line className={styles.icon} />File & Folders</Link></li>
     <li><Link href="/Settings"><MdOutlineSettings className={styles.icon} /> Settings</Link></li>
     </ul>

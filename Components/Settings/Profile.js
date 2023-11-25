@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import css from "../../styles/Settings.module.css"
 import { IoLogOutOutline,IoClose } from "react-icons/io5";
 import { BiEdit } from "react-icons/bi";
-import { BsCheckLg } from "react-icons/bs";
-import { HiCheck } from "react-icons/hi2";
 import {  Modal } from "antd";
 import { getSession, useSession, signOut } from "next-auth/react"
 import axios from 'axios';
 import { ApiEndPoint } from '@/public/ApiEndPoint';
 import UserForm from './UserForm';
+import { useRouter } from 'next/router';
 const Profile = () => {
+  const router = useRouter();
     const[userData,setUserData]=useState({})
 const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,7 +20,11 @@ const [isModalOpen, setIsModalOpen] = useState(false);
         UserId = localStorage.getItem("UserId");
         token = localStorage.getItem("token");
       }
+      const Logouthandler =async()=>{
 
+        router.push("/login")
+            signOut()
+        }
     const getUserData = async () => {
       //  messageAlert("loading", "Geting Client Data...");
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -121,7 +125,7 @@ const showModal = () => {
           </div>
 
           <div className={css.logout}>
-            <button>
+            <button onClick={() => Logouthandler()}>
               Logout <IoLogOutOutline />
             </button>
           </div>
@@ -184,7 +188,7 @@ const showModal = () => {
               </div>
               <div className={css.EditRow}>
                 <div
-                  className={`${css.inputlabel} flex items-center gap-7 w-full`}
+                  className={`${css.inputlabel} items-center gap-7 w-full hidden`}
                 >
                   <label className="w-[30%]">Passowrd</label>
                   <span className="text-[1.6rem] font-medium w-[70%]">

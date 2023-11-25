@@ -526,18 +526,18 @@ ${reporttable(indexId)}
     <div class="leftDiv">
     <div class="TopDiv">
     <div class="InstrmentId borderRigth">
-    <div class="InstrId borderBottom" >Instrument Type/Id:  ${
-      ReportCreatedData.InstrumentId
+    <div class="InstrId borderBottom"> Instrument Type/Id:  ${
+      ReportCreatedData.InstrumentId? ReportCreatedData.InstrumentId:''
     }</div>
-    <div  class="InstrId borderBottom" >Models No.: ${
-      ReportCreatedData.ModalNo
-    }<</div>
+    <div  class="InstrId borderBottom"> Models No.: ${
+      ReportCreatedData.ModalNo?ReportCreatedData.ModalNo:''
+    }</div>
     <div  class="InstrId">SR No.:</div>
     </div>
     <div class="modalNo">
       <div class="withness_box borderBottom" >WITNESSED BY:</div>
       <div class="withness_box"  >INSPECTION AGENCY:${
-        ReportCreatedData.agencyName
+        ReportCreatedData.agencyName?ReportCreatedData.agencyName:''
       }</div>
     </div>
     </div>

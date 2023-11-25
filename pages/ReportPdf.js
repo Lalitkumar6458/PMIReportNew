@@ -76,6 +76,8 @@ const [LatterPadNo, setLatterPadNo] = useState();
    setIsModalOpen(false);
  };
 
+  
+
          var data=JSON.parse(localStorage.getItem("ReportAllDAta"))
         const[formateNo,setFormateNo]=useState(1)
  const showDeleteConfirm = () => {
@@ -178,17 +180,19 @@ const fileName = `${reportSetData?.clientName}_${reportSetData?.grade}_${reportS
    console.log("radio checked", e.target.value);
    setValue(e.target.value);
    setFormateNo(e.target.value);
+   getBase64Url()
  
  };
  const handleChange = (value) => {
    console.log(`selected ${value}`);
    setLatterPadNo(value);
     setIslaterPadSelected(true);
+    getBase64Url()
  };
     const latterpadSelect=(value)=>{
 console.log(value,"value")
 setWithLatterPad(value);
- 
+getBase64Url()
     }
 const GetLatterpadData = async () => {
 
@@ -230,23 +234,22 @@ const GetLatterpadData = async () => {
 };
 useEffect(() => {
   GetLatterpadData();
-  const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
-  console.log(blobURL,"blobURL")
+
 }, []);
+// const [instance, updateInstance] = usePDF({
+//   document: (
+//     <MyDocument
+//       formateNo={formateNo}
+//       setPdfReady={setPdfReady}
+//       latterPad={withLatter}
+//       islaterPadSelected={islaterPadSelected}
+//       latterPadNo={LatterPadNo}
+//     />
+//   ),
+// });
+// console.log(instance.url, "instance");
 
 
-//  const [instance, updateInstance] = usePDF({
-//    document: (
-//      <MyDocument
-//        formateNo={formateNo}
-//        setPdfReady={setPdfReady}
-//        latterPad={withLatter}
-//        islaterPadSelected={islaterPadSelected}
-//        latterPadNo={LatterPadNo}
-//      />
-//    ),
-//  });
-//  console.log(instance.url, "instance");
 const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
 const sendReport=async()=>{
   const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
@@ -284,10 +287,10 @@ const sendReport=async()=>{
   //   });
 }
 
-const docs=[{uri:"data:application/pdf;base64,"+pdfurl}]
-const ViewReport=()=>{
 
 
+
+async function  getBase64Url(){
   const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
   console.log(blobURL, "blobURL");
   fetch(blobURL)
@@ -302,6 +305,9 @@ const ViewReport=()=>{
     .catch((error) => {
       console.error(error);
     });
+}
+const ViewReport=()=>{
+  getBase64Url()
     setOpenViewReport(true)
 }
 

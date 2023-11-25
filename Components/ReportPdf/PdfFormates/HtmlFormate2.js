@@ -417,22 +417,22 @@ const HtmlFormate2 = ({
   <div class="MainInfo">
    <div class="Col_6 heigh_box borderRigth">
    <div class="textfont borderBottom heigth_25">PMI REPORT NO:-${
-     ReportCreatedData.pmiReportNo
+     ReportCreatedData.pmiReportNo?ReportCreatedData.pmiReportNo:''
    } </div>
    <div class="textfont borderBottom heigth_25">Date : ${formatDate(
-     ReportCreatedData.date
+     ReportCreatedData.date? ReportCreatedData.date:''
    )}</div>
 <div class="textfont marTop">Specified Grade: ${ReportCreatedData.grade}</div>
    </div>
    <div class="Col_7 heigh_box ">
 <div class="textfont borderBottom heigth_25">M/S :-  ${
-      ReportCreatedData.clientName
+      ReportCreatedData.clientName?ReportCreatedData.clientName:''
     }</div>
 <div class="textfont borderBottom heigth_25">Location: ${
-      ReportCreatedData.location
+      ReportCreatedData.location?ReportCreatedData.location:''
     }</div>
 <div class="textfont borderBottom heigth_25">PO NO:- ${
-      ReportCreatedData.poNo
+      ReportCreatedData.poNo?ReportCreatedData.poNo:''
     }</div>
 <div class="textfont heigth_25">CLIENT NAME:-</div>
 
@@ -445,13 +445,13 @@ ${reporttable(indexId)}
 <div class="EndPoinPDF">
 <div class="Col_3End borderRigth">
 <div class="nedtext">
-  INSTRUMENT TYPE/ID:- ${ReportCreatedData.InstrumentId}
+  INSTRUMENT TYPE/ID:- ${ReportCreatedData.InstrumentId?ReportCreatedData.InstrumentId:''}
 </div>
 <div class="nedtext">
   X-XRF ANALYER: OXFORD MODEL 
 </div>
 <div class="nedtext">
-  MODEL NO:${ReportCreatedData.ModalNo}
+  MODEL NO:${ReportCreatedData.ModalNo?ReportCreatedData.ModalNo:''}
 </div>
 <div class="nedtext">
   SR.NO.:-
