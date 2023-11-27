@@ -4,6 +4,7 @@ import MyDocument from '@/Components/ReportPdf/ReportPdfFormat'
 import {
   PDFViewer,
   usePDF,
+  pdf,
   PDFDownloadLink,
 } from "@react-pdf/renderer";
 import {LuView} from "react-icons/lu"
@@ -144,19 +145,7 @@ const fileName = `${reportSetData?.clientName}_${reportSetData?.grade}_${reportS
       reader.readAsDataURL(blob);
     });
   }
-  // Usage example
-  // const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
-  // fetch(blobURL)
-  //   .then((response) => response.blob())
-  //   .then((blob) => blobToBase64(blob))
-  //   .then((base64String) => {
-  //     // console.log(base64String,"base64");
-  //     setPdfUrl(base64String)
-  //     // Use the base64 string as needed
-  //   })
-  //   .catch((error) => {
-  //     console.error(error);
-  //   });
+
 
     const EditReport = () => {
 
@@ -236,18 +225,11 @@ useEffect(() => {
   GetLatterpadData();
 
 }, []);
-// const [instance, updateInstance] = usePDF({
-//   document: (
-//     <MyDocument
-//       formateNo={formateNo}
-//       setPdfReady={setPdfReady}
-//       latterPad={withLatter}
-//       islaterPadSelected={islaterPadSelected}
-//       latterPadNo={LatterPadNo}
-//     />
-//   ),
-// });
-// console.log(instance.url, "instance");
+useEffect(() => {
+  // GetLatterpadData();
+
+}, [pdfurl]);
+
 
 
 const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
@@ -267,39 +249,30 @@ const sendReport=async()=>{
       console.error(error);
     });
 
-  // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  // const data = {
-  //   pdfurl: pdfurl,
-  //   userId: UserId,
-  // };
-  // axios
-  //   .post(ApiEndPoint + "sendreport", data)
-  //   .then((response) => {
-  //     // Handle the response from the backend
-  //     console.log("response",response);
-  //     if (response.status == 200) {
-  //  alert("send email")
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log("error", error);
-  //     // Handle any errors or unauthorized access
-  //   });
+
 }
-
-
-
-
+const getUrl=async()=>{
+  const blob =await pdf( <MyDocument
+    formateNo={formateNo}
+    latterPad={withLatter}
+    islaterPadSelected={islaterPadSelected}
+    latterPadNo={LatterPadNo}
+  />).toBlob();
+  
+  console.log(blob,'blob url')
+}
+useEffect(()=>{
+  getUrl()
+},[])
+const blobRef=useRef(null)
 async function  getBase64Url(){
-  const blobURL = document.getElementById("pdfUrl")?document.getElementById("pdfUrl").value:"";
-  console.log(blobURL, "blobURL");
+  const blobURL = blobRef.current.value
   fetch(blobURL)
     .then((response) => response.blob())
     .then((blob) => blobToBase64(blob))
     .then((base64String) => {
       // console.log(base64String,"base64");
       setPdfUrl("data:application/pdf;base64,"+base64String)
-      console.log(base64String, "base64String");
       // Use the base64 string as needed
     })
     .catch((error) => {
@@ -431,7 +404,7 @@ const ViewReport=()=>{
                      <MdFileDownload />
                      Donwload
                    </button>
-                   <input type="hidden" id="pdfUrl" value={url} />
+                   <input ref={blobRef} type="hidden" id="pdfUrl" value={url} />
                    </div>
                    
                   )

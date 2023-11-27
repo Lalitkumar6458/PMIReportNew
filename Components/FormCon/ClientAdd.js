@@ -114,7 +114,7 @@ const ClientAdd = ({ setIsModalOpen, GetclientData }) => {
           name="email"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Missing Email",
             },
           ]}
@@ -128,7 +128,7 @@ const ClientAdd = ({ setIsModalOpen, GetclientData }) => {
           name="phoneNo"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Missing Phone No.",
             },
           ]}
@@ -143,7 +143,7 @@ const ClientAdd = ({ setIsModalOpen, GetclientData }) => {
           name="address"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Missing address",
             },
           ]}

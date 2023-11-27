@@ -118,7 +118,7 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             name="email"
             rules={[
               {
-                required: true,
+                required: false,
               },
             ]}
           >
@@ -131,7 +131,7 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             name="phoneNo"
             rules={[
               {
-                required: true,
+                required: false,
               },
             ]}
           >
@@ -144,7 +144,7 @@ const UserForm = ({ setIsModalOpen, userData, getUserData }) => {
             name="companyName"
             rules={[
               {
-                required: true,
+                required: false,
               },
             ]}
           >

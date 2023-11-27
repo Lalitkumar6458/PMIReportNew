@@ -13,16 +13,10 @@
  
 }
 
-
-
-
 .reportButon{
-
     position: absolute;
-    bottom: 50px;
+    bottom: 10%;
     right: 29px;
-
-   
 }
 .dashboard_con{
     padding: 2% 3%;

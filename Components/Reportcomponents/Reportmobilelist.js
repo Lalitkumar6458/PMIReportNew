@@ -272,7 +272,7 @@ const DeleteReportData=()=>{
                   name="heatno"
                   rules={[
                     {
-                      required: true,
+                      required: false,
                     },
                   ]}
                 >
