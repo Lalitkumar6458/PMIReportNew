@@ -39,6 +39,8 @@ import Router, { useRouter } from "next/router";
 import Reportmobilelist from "@/Components/Reportcomponents/Reportmobilelist";
 import { getSession, useSession, signOut } from "next-auth/react"
 import axios from "axios";
+import ClientAdd from "@/Components/FormCon/ClientAdd";
+import ChemicalAdd from "@/Components/FormCon/ChemicalAdd";
 
 const Report = ({ reportData,session }) => {
   const router = useRouter();
@@ -52,6 +54,17 @@ const Report = ({ reportData,session }) => {
   const [AgencyUser, setAgencyUser] = useState('');
 const [clientSelected,setClientSelected]=useState('')
 const [isFormDirty, setIsFormDirty] = useState(false);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const[isAddInfo,setIsAddInfo]=useState('')
+const showModal = () => {
+  setIsModalOpen(true);
+};
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
     const [form] = Form.useForm();
        let UserId = "";
        let token;
@@ -349,7 +362,15 @@ return a[2]+"-"+a[1]+"-"+a[0]
        });
     }
   }, [getAllData]);
-
+const AddNewInfo=(name)=>{
+  if(name=='Machine'){
+    Router.push('/Settings?pageId=2')
+  }else{
+    setIsAddInfo(name)
+    showModal()
+  }
+  
+}
 
   return (
     <>
@@ -387,6 +408,14 @@ return a[2]+"-"+a[1]+"-"+a[0]
                       placeholder="Select a Client"
                       optionFilterProp="children"
                       onSearch={onSearch}
+                      dropdownRender={(menu) => (
+                       <div >
+                       {menu}
+                       <div className="flex items-center justify-center shadow border">
+                       <button className="w-fit p-1 text-blue-600 text-center" onClick={()=>AddNewInfo('Client')}>+Add Client</button>
+                       </div>
+                       </div>
+                      )}
                       onChange={selectClientChange}
                       filterOption={(input, option) =>
                         (option?.label ?? "")
@@ -504,6 +533,14 @@ return a[2]+"-"+a[1]+"-"+a[0]
                       showSearch
                       placeholder="Select a Instrument Id"
                       optionFilterProp="children"
+                      dropdownRender={(menu) => (
+                        <div >
+                        {menu}
+                        <div className="flex items-center justify-center shadow border">
+                        <button className="w-fit p-1 text-blue-600 text-center" onClick={()=>AddNewInfo('Machine')}>+Add Instrument Id</button>
+                        </div>
+                        </div>
+                       )}
                       onSearch={onSearch}
                       filterOption={(input, option) =>
                         (option?.label ?? "")
@@ -538,6 +575,14 @@ return a[2]+"-"+a[1]+"-"+a[0]
                       placeholder="Select Modal No."
                       optionFilterProp="children"
                       onSearch={onSearch}
+                      dropdownRender={(menu) => (
+                        <div >
+                        {menu}
+                        <div className="flex items-center justify-center shadow border">
+                        <button className="w-fit p-1 text-blue-600 text-center" onClick={()=>AddNewInfo('Machine')}>+Add Modal No</button>
+                        </div>
+                        </div>
+                       )}
                       filterOption={(input, option) =>
                         (option?.label ?? "")
                           .toLowerCase()
@@ -641,6 +686,14 @@ return a[2]+"-"+a[1]+"-"+a[0]
                             onChange={getGradeChemical}
                             placeholder="Select Grade"
                             optionFilterProp="children"
+                            dropdownRender={(menu) => (
+                              <div >
+                              {menu}
+                              <div className="flex items-center justify-center shadow border">
+                              <button className="w-fit p-1 text-blue-600 text-center" onClick={()=>AddNewInfo('Grade')}>+Add Grade</button>
+                              </div>
+                              </div>
+                             )}
                             onSearch={onSearch}
                             filterOption={(input, option) =>
                               (option?.label ?? "")
@@ -842,6 +895,24 @@ return a[2]+"-"+a[1]+"-"+a[0]
             </div>
           </div>
         </Drawer>
+
+        <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        <div className="p-2">
+        {
+          isAddInfo==='Client'?<ClientAdd
+          GetclientData={getallData}
+          setIsModalOpen={setIsModalOpen}
+        />: isAddInfo==='Grade'?<ChemicalAdd
+        
+        isEditGrade={false}
+        setIsModalOpen={setIsModalOpen}
+        EditGradeData={[]}
+        getAllChemicalData={getallData}
+      />:null
+        }
+         
+        </div>
+      </Modal>
       </Layout>
     </>
   );

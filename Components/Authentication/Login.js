@@ -94,7 +94,7 @@ localStorage.setItem("statusData", JSON.stringify(status));
             setUsernameCheck(false);
             setPasswordCheck(false);
           } else if ((response.status = 200)) {
-            alert("response.data.data.id", response.data.data.id);
+           
             const data = {
               name: response.data.data.username,
               email: response.data.data.email,
@@ -212,7 +212,7 @@ if (userId) {
               <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className={`flex items-center gap-3 rounded-md bg-white px-5 h-[60px] border shadow-md text-[2.1rem] `}
+                className={`hidden items-center gap-3 rounded-md bg-white px-5 h-[60px] border shadow-md text-[2.1rem] `}
               >
                 <Image src={imgG} alt="google image" width="22" height={22} />
                 Sign In with Google

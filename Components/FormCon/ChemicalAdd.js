@@ -107,6 +107,9 @@ if(response.status==200){
         >
           <Input size="large" placeholder="Enter Grade Name" />
         </Form.Item>
+        <div className="">
+        <span className=" font-roboto  text-gray-600"><span className=" font-semibold text-blue-900">Note: </span>Maximum(Max and max ex.2Max), Between(use (-) ex.8-10) Use for Percentage(%)</span>
+        </div>
         <Form.List name="chemical">
           {(fields, { add, remove }) => (
             <>
